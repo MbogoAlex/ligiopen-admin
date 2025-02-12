@@ -1,0 +1,32 @@
+package com.admin.ligiopen
+
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.admin.ligiopen.ui.screens.auth.LoginViewModel
+import com.admin.ligiopen.ui.screens.start.SplashViewModel
+
+object AppViewModelFactory {
+    val Factory = viewModelFactory {
+
+        initializer {
+            SplashViewModel(
+                dbRepository = ligiopenApplication().container.dbRepository
+            )
+        }
+
+        initializer {
+            LoginViewModel(
+                apiRepository = ligiopenApplication().container.apiRepository,
+                dbRepository = ligiopenApplication().container.dbRepository,
+                savedStateHandle = this.createSavedStateHandle()
+            )
+        }
+
+    }
+}
+
+fun CreationExtras.ligiopenApplication(): Ligiopen =
+    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Ligiopen)
