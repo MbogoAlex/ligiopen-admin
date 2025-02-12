@@ -2,20 +2,19 @@ package com.admin.ligiopen.data.network.repository
 
 import com.admin.ligiopen.data.network.models.auth.UserLoginRequestBody
 import com.admin.ligiopen.data.network.models.auth.UserLoginResponseBody
-import com.admin.ligiopen.data.network.models.match.location.LocationCreation
-import com.admin.ligiopen.data.network.models.match.location.LocationUpdate
+import com.admin.ligiopen.data.network.models.match.commentary.CommentaryCreationRequest
+import com.admin.ligiopen.data.network.models.match.commentary.CommentaryUpdateRequest
+import com.admin.ligiopen.data.network.models.match.commentary.FullMatchResponseBody
+import com.admin.ligiopen.data.network.models.match.commentary.MatchCommentaryResponseBody
+import com.admin.ligiopen.data.network.models.match.fixture.FixtureCreationRequest
+import com.admin.ligiopen.data.network.models.match.fixture.FixtureResponseBody
+import com.admin.ligiopen.data.network.models.match.fixture.FixtureUpdateRequest
+import com.admin.ligiopen.data.network.models.match.location.LocationCreationRequest
+import com.admin.ligiopen.data.network.models.match.location.LocationUpdateRequest
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationResponseBody
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationsResponseBody
 import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Part
-import retrofit2.http.Path
 
 interface ApiRepository {
 
@@ -24,13 +23,13 @@ interface ApiRepository {
     //    Create match location
     suspend fun createMatchLocation(
         token: String,
-        locationCreation: LocationCreation
+        locationCreation: LocationCreationRequest
     ): Response<MatchLocationResponseBody>
 
 //    Update match location
     suspend fun updateMatchLocation(
         token: String,
-        locationUpdate: LocationUpdate
+        locationUpdate: LocationUpdateRequest
     ): Response<MatchLocationResponseBody>
 
 //    Upload match location photos
@@ -38,6 +37,13 @@ interface ApiRepository {
         token: String,
         locationId: Int,
         files: List<MultipartBody.Part>,
+    ): Response<MatchLocationResponseBody>
+
+    //    Remove match location file
+    suspend fun removeMatchLocationFile(
+        token: String,
+        locationId: Int,
+        fileId: Int,
     ): Response<MatchLocationResponseBody>
 
 //    Get match location
@@ -51,5 +57,53 @@ interface ApiRepository {
         token: String,
     ): Response<MatchLocationsResponseBody>
 
+    //    Create match fixture
+    suspend fun createMatchFixture(
+        token: String,
+        fixtureCreation: FixtureCreationRequest
+    ): Response<FixtureResponseBody>
+
+    //    Update match fixture
+    suspend fun updateMatchFixture(
+        token: String,
+        fixtureUpdate: FixtureUpdateRequest
+    ): Response<FixtureResponseBody>
+
+    //    Get match fixture
+    suspend fun getMatchFixture(
+        token: String,
+        fixtureId: Int,
+    ): Response<FixtureResponseBody>
+
+    //    Upload match commentary
+    suspend fun uploadMatchCommentary(
+        token: String,
+        commentaryCreationRequest: CommentaryCreationRequest
+    ): Response<MatchCommentaryResponseBody>
+
+    //    Update match commentary
+    suspend fun updateMatchCommentary(
+        token: String,
+        commentaryUpdateRequest: CommentaryUpdateRequest
+    ): Response<MatchCommentaryResponseBody>
+
+    //    Upload commentary files
+    suspend fun uploadMatchCommentaryFiles(
+        token: String,
+        commentaryId: Int,
+        files: List<MultipartBody.Part>,
+    ): Response<MatchCommentaryResponseBody>
+
+    //    Get match commentary
+    suspend fun getMatchCommentary(
+        token: String,
+        commentaryId: Int,
+    ): Response<MatchCommentaryResponseBody>
+
+    //    Get full match details
+    suspend fun getFullMatchDetails(
+        token: String,
+        postMatchAnalysisId: Int,
+    ): Response<FullMatchResponseBody>
 
 }
