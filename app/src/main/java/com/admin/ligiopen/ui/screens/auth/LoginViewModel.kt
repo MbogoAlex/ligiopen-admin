@@ -8,6 +8,7 @@ import com.admin.ligiopen.data.network.models.auth.UserLoginRequestBody
 import com.admin.ligiopen.data.network.repository.ApiRepository
 import com.admin.ligiopen.data.room.models.UserAccount
 import com.admin.ligiopen.data.room.repository.DBRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginViewModel(
     private val apiRepository: ApiRepository,
@@ -62,31 +64,37 @@ class LoginViewModel(
                 )
 
                 if(response.isSuccessful) {
-                    val userAccount = UserAccount(
-                        id = response.body()?.data?.user?.id!!,
-                        username = response.body()?.data?.user?.username!!,
-                        email = response.body()?.data?.user?.email!!,
-                        password = uiState.value.password,
-                        role = response.body()?.data?.user?.role!!,
-                        createdAt = response.body()?.data?.user?.createdAt!!,
-                        token = response.body()?.data?.token!!
-                    )
-                    dbRepository.insertUser(userAccount)
+                    withContext(Dispatchers.IO) {
+                        dbRepository.deleteUsers()
 
-                    var users = dbRepository.getUsers().first()
-
-                    while(users.isEmpty()) {
-                        delay(1000)
-                        users = dbRepository.getUsers().first()
-                    }
-
-                    _uiState.update {
-                        it.copy(
-                            loginMessage = "Login successful",
-                            loginStatus = LoginStatus.SUCCESS
+                        val userAccount = UserAccount(
+                            id = response.body()?.data?.user?.id!!,
+                            username = response.body()?.data?.user?.username!!,
+                            email = response.body()?.data?.user?.email!!,
+                            password = uiState.value.password,
+                            role = response.body()?.data?.user?.role!!,
+                            createdAt = response.body()?.data?.user?.createdAt!!,
+                            token = response.body()?.data?.token!!
                         )
+                        dbRepository.insertUser(userAccount)
+
+                        var users = dbRepository.getUsers().first()
+
+                        while(users.isEmpty()) {
+                            delay(1000)
+                            users = dbRepository.getUsers().first()
+                        }
+
+                        _uiState.update {
+                            it.copy(
+                                loginMessage = "Login successful",
+                                loginStatus = LoginStatus.SUCCESS
+                            )
+                        }
+                        Log.d("loginResult", "Login successful!")
                     }
-                    Log.d("loginResult", "Login successful!")
+
+
                 } else {
                     if(response.code() == 401) {
                         _uiState.update {

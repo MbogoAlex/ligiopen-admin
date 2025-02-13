@@ -10,6 +10,6 @@ data class MatchLocationData(
     val country: String,
     val county: String,
     val town: String,
-    val photos: List<FileData>,
-    val matchFixturesIds: List<Int>
+    val photos: List<FileData>?,
+    val matchFixturesIds: List<Int>?
 )

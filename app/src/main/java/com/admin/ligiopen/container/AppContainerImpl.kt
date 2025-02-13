@@ -17,7 +17,7 @@ class AppContainerImpl(context: Context) : AppContainer {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
-    private val baseUrl = "http://192.168.89.6:8000/api/"
+    private val baseUrl = "http://192.168.62.6:8000/api/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)

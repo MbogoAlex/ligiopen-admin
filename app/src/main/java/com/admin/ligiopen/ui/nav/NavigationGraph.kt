@@ -61,7 +61,11 @@ fun NavigationGraph(
             )
         }
         composable(HomeScreenDestination.route) {
-            HomeScreenComposable()
+            HomeScreenComposable(
+                navigateToLoginScreenWithArgs = {email, password ->
+                    navController.navigate("${LoginScreenDestination.route}/$email/$password")
+                }
+            )
         }
     }
 }

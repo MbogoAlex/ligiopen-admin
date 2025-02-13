@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.admin.ligiopen.ui.screens.auth.LoginViewModel
+import com.admin.ligiopen.ui.screens.match.location.LocationsViewModel
 import com.admin.ligiopen.ui.screens.start.SplashViewModel
 
 object AppViewModelFactory {
@@ -22,6 +23,13 @@ object AppViewModelFactory {
                 apiRepository = ligiopenApplication().container.apiRepository,
                 dbRepository = ligiopenApplication().container.dbRepository,
                 savedStateHandle = this.createSavedStateHandle()
+            )
+        }
+
+        initializer {
+            LocationsViewModel(
+                apiRepository = ligiopenApplication().container.apiRepository,
+                dbRepository = ligiopenApplication().container.dbRepository,
             )
         }
 
