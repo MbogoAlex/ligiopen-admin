@@ -14,7 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,17 +84,33 @@ fun LocationsScreen(
     matchLocations: List<MatchLocationData>,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                horizontal = screenWidth(x = 16.0),
-                vertical = screenHeight(x = 16.0)
-            )
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /*TODO*/ }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add new location"
+                )
+            }
+        }
     ) {
-        LazyColumn {
-            items(matchLocations) {
-                LocationCard(matchLocation = it)
+        Box(
+            modifier = Modifier
+                .padding(it)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        horizontal = screenWidth(x = 16.0),
+                        vertical = screenHeight(x = 16.0)
+                    )
+            ) {
+                LazyColumn {
+                    items(matchLocations) {
+                        LocationCard(matchLocation = it)
+                    }
+                }
             }
         }
     }
@@ -174,20 +195,28 @@ fun LocationCard(
                     )
                 }
             }
-
-            Text(
-                text = matchLocation.venueName,
-                modifier = Modifier.padding(screenWidth(x = 8.0)),
-                fontSize = screenFontSize(x = 18.0).sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "${matchLocation.town}, ${matchLocation.county}, ${matchLocation.country}",
-                modifier = Modifier.padding(horizontal = screenWidth(x = 4.0), vertical = screenHeight(
-                    x = 4.0
-                )),
-                fontSize = screenFontSize(x = 14.0).sp
-            )
+            
+            Column(
+                modifier = Modifier
+                    .padding(
+                        horizontal = screenWidth(x = 16.0),
+                        vertical = screenHeight(x = 8.0)
+                    )
+            ) {
+                Text(
+                    text = matchLocation.venueName,
+                    modifier = Modifier.padding(screenWidth(x = 8.0)),
+                    fontSize = screenFontSize(x = 18.0).sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "${matchLocation.town}, ${matchLocation.county}, ${matchLocation.country}",
+                    modifier = Modifier.padding(horizontal = screenWidth(x = 4.0), vertical = screenHeight(
+                        x = 4.0
+                    )),
+                    fontSize = screenFontSize(x = 14.0).sp
+                )  
+            }
         }
     }
 }
