@@ -51,7 +51,6 @@ import com.admin.ligiopen.utils.screenWidth
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.launch
 
 @Composable
 fun LocationsScreenComposable(
@@ -88,7 +87,7 @@ fun LocationsScreenComposable(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .safeDrawingPadding()
     ) {
         LocationsScreen(
