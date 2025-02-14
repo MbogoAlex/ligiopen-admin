@@ -2,6 +2,7 @@ package com.admin.ligiopen.data.network.repository
 
 import com.admin.ligiopen.data.network.models.auth.UserLoginRequestBody
 import com.admin.ligiopen.data.network.models.auth.UserLoginResponseBody
+import com.admin.ligiopen.data.network.models.club.ClubsResponseBody
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryCreationRequest
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryUpdateRequest
 import com.admin.ligiopen.data.network.models.match.commentary.FullMatchResponseBody
@@ -146,5 +147,16 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.getFullMatchDetails(
             token = "Bearer $token",
             postMatchAnalysisId = postMatchAnalysisId
+        )
+
+    override suspend fun getClubs(token: String): Response<ClubsResponseBody> =
+        apiService.getClubs(
+            token = "Bearer $token"
+        )
+
+    override suspend fun getClub(token: String, clubId: Int): Response<ClubsResponseBody> =
+        apiService.getClub(
+            token = "Bearer $token",
+            clubId = clubId
         )
 }

@@ -104,6 +104,7 @@ fun HomeScreen(
         when(selectedTab) {
             HomeTabs.CLUBS -> {
                 ClubsScreenComposable(
+                    navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                     modifier = Modifier
                         .weight(1f)
                 )

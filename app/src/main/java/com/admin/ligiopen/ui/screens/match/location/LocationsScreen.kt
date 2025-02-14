@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,6 +46,7 @@ import com.admin.ligiopen.AppViewModelFactory
 import com.admin.ligiopen.data.network.enums.LoadingStatus
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationData
 import com.admin.ligiopen.data.network.models.match.location.matchLocations
+import com.admin.ligiopen.ui.screens.match.clubs.ClubCard
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
 import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenHeight
@@ -92,7 +95,8 @@ fun LocationsScreenComposable(
     ) {
         LocationsScreen(
             matchLocations = uiState.matchLocations,
-            navigateToLocationAdditionScreen = navigateToLocationAdditionScreen
+            navigateToLocationAdditionScreen = navigateToLocationAdditionScreen,
+            loadingStatus = uiState.loadingStatus
         )
     }
 }
@@ -101,6 +105,7 @@ fun LocationsScreenComposable(
 fun LocationsScreen(
     matchLocations: List<MatchLocationData>,
     navigateToLocationAdditionScreen: () -> Unit,
+    loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -125,11 +130,23 @@ fun LocationsScreen(
                         vertical = screenHeight(x = 16.0)
                     )
             ) {
-                LazyColumn {
-                    items(matchLocations) {
-                        LocationCard(matchLocation = it)
+                if(loadingStatus == LoadingStatus.LOADING) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    LazyColumn {
+                        items(matchLocations) { location ->
+                            LocationCard(matchLocation = location)
+                            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                        }
                     }
                 }
+
             }
         }
     }
@@ -246,6 +263,7 @@ fun LocationsScreenPreview() {
     LigiopenadminTheme {
         LocationsScreen(
             matchLocations = matchLocations,
+            loadingStatus = LoadingStatus.INITIAL,
             navigateToLocationAdditionScreen = {}
         )
     }

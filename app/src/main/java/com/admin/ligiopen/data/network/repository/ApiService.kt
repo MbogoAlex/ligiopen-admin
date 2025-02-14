@@ -2,6 +2,7 @@ package com.admin.ligiopen.data.network.repository
 
 import com.admin.ligiopen.data.network.models.auth.UserLoginRequestBody
 import com.admin.ligiopen.data.network.models.auth.UserLoginResponseBody
+import com.admin.ligiopen.data.network.models.club.ClubsResponseBody
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryCreationRequest
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryUpdateRequest
 import com.admin.ligiopen.data.network.models.match.commentary.FullMatchResponseBody
@@ -135,5 +136,18 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("postMatchAnalysisId") postMatchAnalysisId: Int,
     ): Response<FullMatchResponseBody>
+
+//    Get clubs
+    @GET("club")
+    suspend fun getClubs(
+        @Header("Authorization") token: String
+    ): Response<ClubsResponseBody>
+
+//    Get club
+    @GET("club/{clubId}")
+    suspend fun getClub(
+        @Header("Authorization") token: String,
+        @Path("clubId") clubId: Int,
+    ): Response<ClubsResponseBody>
 
 }

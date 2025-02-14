@@ -2,6 +2,7 @@ package com.admin.ligiopen.data.network.repository
 
 import com.admin.ligiopen.data.network.models.auth.UserLoginRequestBody
 import com.admin.ligiopen.data.network.models.auth.UserLoginResponseBody
+import com.admin.ligiopen.data.network.models.club.ClubsResponseBody
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryCreationRequest
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryUpdateRequest
 import com.admin.ligiopen.data.network.models.match.commentary.FullMatchResponseBody
@@ -105,5 +106,16 @@ interface ApiRepository {
         token: String,
         postMatchAnalysisId: Int,
     ): Response<FullMatchResponseBody>
+
+    //    Get clubs
+    suspend fun getClubs(
+        token: String
+    ): Response<ClubsResponseBody>
+
+    //    Get club
+    suspend fun getClub(
+        token: String,
+        clubId: Int,
+    ): Response<ClubsResponseBody>
 
 }

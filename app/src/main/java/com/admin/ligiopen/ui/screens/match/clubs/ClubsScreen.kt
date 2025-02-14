@@ -17,21 +17,29 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.admin.ligiopen.AppViewModelFactory
+import com.admin.ligiopen.data.network.enums.LoadingStatus
 import com.admin.ligiopen.data.network.models.club.ClubData
 import com.admin.ligiopen.data.network.models.club.clubs
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
@@ -41,14 +49,45 @@ import com.admin.ligiopen.utils.screenWidth
 
 @Composable
 fun ClubsScreenComposable(
+    navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val viewModel: ClubsViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    LaunchedEffect(lifecycleState) {
+        when(lifecycleState) {
+            Lifecycle.State.DESTROYED -> {}
+            Lifecycle.State.INITIALIZED -> {}
+            Lifecycle.State.CREATED -> {}
+            Lifecycle.State.STARTED -> {}
+            Lifecycle.State.RESUMED -> {
+                viewModel.getInitialData()
+            }
+        }
+    }
+
+    if(uiState.loadingStatus == LoadingStatus.FAIL) {
+        if(uiState.unauthorized) {
+            val email = uiState.userAccount.email
+            val password = uiState.userAccount.password
+
+            navigateToLoginScreenWithArgs(email, password)
+        }
+        viewModel.resetStatus()
+    }
+
     Box(
         modifier = modifier
             .safeDrawingPadding()
     ) {
         ClubsScreen(
-            clubs = clubs
+            clubs = uiState.clubs,
+            loadingStatus = uiState.loadingStatus
         )
     }
 }
@@ -56,6 +95,7 @@ fun ClubsScreenComposable(
 @Composable
 fun ClubsScreen(
     clubs: List<ClubData>,
+    loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -80,10 +120,20 @@ fun ClubsScreen(
                         horizontal = screenWidth(x = 16.0)
                     )
             ) {
-                LazyColumn {
-                    items(clubs) {
-                        ClubCard(club = it)
-                        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                if(loadingStatus == LoadingStatus.LOADING) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    LazyColumn {
+                        items(clubs) { club ->
+                            ClubCard(club = club)
+                            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                        }
                     }
                 }
             }
@@ -142,7 +192,8 @@ fun ClubCard(
 fun ClubsScreenPreview() {
     LigiopenadminTheme {
         ClubsScreen(
-            clubs = clubs
+            clubs = clubs,
+            loadingStatus = LoadingStatus.INITIAL
         )
     }
 }
