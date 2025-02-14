@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.admin.ligiopen.ui.screens.auth.LoginViewModel
+import com.admin.ligiopen.ui.screens.match.location.LocationAdditionVewModel
 import com.admin.ligiopen.ui.screens.match.location.LocationsViewModel
 import com.admin.ligiopen.ui.screens.start.SplashViewModel
 
@@ -30,6 +31,13 @@ object AppViewModelFactory {
             LocationsViewModel(
                 apiRepository = ligiopenApplication().container.apiRepository,
                 dbRepository = ligiopenApplication().container.dbRepository,
+            )
+        }
+
+        initializer {
+            LocationAdditionVewModel(
+                apiRepository = ligiopenApplication().container.apiRepository,
+                dbRepository = ligiopenApplication().container.dbRepository
             )
         }
 

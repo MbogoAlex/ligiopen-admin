@@ -31,11 +31,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.admin.ligiopen.AppViewModelFactory
@@ -54,10 +56,26 @@ import kotlinx.coroutines.launch
 @Composable
 fun LocationsScreenComposable(
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
+    navigateToLocationAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: LocationsViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    LaunchedEffect(lifecycleState) {
+        when(lifecycleState) {
+            Lifecycle.State.DESTROYED -> {}
+            Lifecycle.State.INITIALIZED -> {}
+            Lifecycle.State.CREATED -> {}
+            Lifecycle.State.STARTED -> {}
+            Lifecycle.State.RESUMED -> {
+                viewModel.getInitialData()
+            }
+        }
+    }
 
     if(uiState.loadingStatus == LoadingStatus.FAIL) {
         if(uiState.unaAuthorized) {
@@ -74,7 +92,8 @@ fun LocationsScreenComposable(
             .safeDrawingPadding()
     ) {
         LocationsScreen(
-            matchLocations = uiState.matchLocations
+            matchLocations = uiState.matchLocations,
+            navigateToLocationAdditionScreen = navigateToLocationAdditionScreen
         )
     }
 }
@@ -82,11 +101,12 @@ fun LocationsScreenComposable(
 @Composable
 fun LocationsScreen(
     matchLocations: List<MatchLocationData>,
+    navigateToLocationAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ }) {
+            FloatingActionButton(onClick = navigateToLocationAdditionScreen) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add new location"
@@ -171,12 +191,12 @@ fun LocationCard(
                     }
                 }
 
-                // Auto-slide effect (optional)
-                LaunchedEffect(pagerState.currentPage) {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage((pagerState.currentPage + 1) % photos.size)
-                    }
-                }
+//                // Auto-slide effect (optional)
+//                LaunchedEffect(pagerState.currentPage) {
+//                    coroutineScope.launch {
+//                        pagerState.animateScrollToPage((pagerState.currentPage + 1) % photos.size)
+//                    }
+//                }
             } else {
                 // No Photos Case
                 Box(
@@ -226,7 +246,8 @@ fun LocationCard(
 fun LocationsScreenPreview() {
     LigiopenadminTheme {
         LocationsScreen(
-            matchLocations = matchLocations
+            matchLocations = matchLocations,
+            navigateToLocationAdditionScreen = {}
         )
     }
 }

@@ -20,6 +20,7 @@ object HomeScreenDestination: AppNavigation {
 @Composable
 fun HomeScreenComposable(
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
+    navigateToLocationAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -31,7 +32,8 @@ fun HomeScreenComposable(
             .safeDrawingPadding()
     ) {
         HomeScreen(
-            navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs
+            navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+            navigateToLocationAdditionScreen = navigateToLocationAdditionScreen
         )
     }
 }
@@ -39,9 +41,13 @@ fun HomeScreenComposable(
 @Composable
 fun HomeScreen(
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
+    navigateToLocationAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LocationsScreenComposable(navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs)
+    LocationsScreenComposable(
+        navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+        navigateToLocationAdditionScreen = navigateToLocationAdditionScreen
+    )
 }
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -49,7 +55,8 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     LigiopenadminTheme {
         HomeScreen(
-            navigateToLoginScreenWithArgs = { email, password ->}
+            navigateToLoginScreenWithArgs = { email, password ->},
+            navigateToLocationAdditionScreen = {}
         )
     }
 }

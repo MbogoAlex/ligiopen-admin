@@ -23,7 +23,7 @@ interface ApiRepository {
     //    Create match location
     suspend fun createMatchLocation(
         token: String,
-        locationCreation: LocationCreationRequest
+        locationCreationRequest: LocationCreationRequest
     ): Response<MatchLocationResponseBody>
 
 //    Update match location

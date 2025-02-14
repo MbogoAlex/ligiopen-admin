@@ -22,11 +22,11 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
 
     override suspend fun createMatchLocation(
         token: String,
-        locationCreation: LocationCreationRequest
+        locationCreationRequest: LocationCreationRequest
     ): Response<MatchLocationResponseBody> =
         apiService.createMatchLocation(
             token = "Bearer $token",
-            locationCreation = locationCreation
+            locationCreation = locationCreationRequest
         )
 
     override suspend fun updateMatchLocation(

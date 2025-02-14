@@ -11,6 +11,8 @@ import com.admin.ligiopen.ui.screens.auth.LoginScreenComposable
 import com.admin.ligiopen.ui.screens.auth.LoginScreenDestination
 import com.admin.ligiopen.ui.screens.home.HomeScreenComposable
 import com.admin.ligiopen.ui.screens.home.HomeScreenDestination
+import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenComposable
+import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenDestination
 import com.admin.ligiopen.ui.screens.start.SplashScreenComposable
 import com.admin.ligiopen.ui.screens.start.SplashScreenDestination
 
@@ -64,6 +66,16 @@ fun NavigationGraph(
             HomeScreenComposable(
                 navigateToLoginScreenWithArgs = {email, password ->
                     navController.navigate("${LoginScreenDestination.route}/$email/$password")
+                },
+                navigateToLocationAdditionScreen = {
+                    navController.navigate(LocationAdditionScreenDestination.route)
+                }
+            )
+        }
+        composable(LocationAdditionScreenDestination.route) {
+            LocationAdditionScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
                 }
             )
         }
