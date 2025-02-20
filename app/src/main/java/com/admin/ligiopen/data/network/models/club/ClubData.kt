@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ClubData(
     val clubId: Int,
-    val clubLogo: FileData?,
+    val clubLogo: FileData,
     val clubMainPhoto: FileData?,
     val name: String,
     val description: String,

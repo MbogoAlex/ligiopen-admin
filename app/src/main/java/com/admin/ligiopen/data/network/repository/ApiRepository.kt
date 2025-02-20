@@ -12,12 +12,14 @@ import com.admin.ligiopen.data.network.models.match.commentary.MatchCommentaryRe
 import com.admin.ligiopen.data.network.models.match.fixture.FixtureCreationRequest
 import com.admin.ligiopen.data.network.models.match.fixture.FixtureResponseBody
 import com.admin.ligiopen.data.network.models.match.fixture.FixtureUpdateRequest
+import com.admin.ligiopen.data.network.models.match.fixture.FixturesResponseBody
 import com.admin.ligiopen.data.network.models.match.location.LocationCreationRequest
 import com.admin.ligiopen.data.network.models.match.location.LocationUpdateRequest
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationResponseBody
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationsResponseBody
 import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -81,6 +83,11 @@ interface ApiRepository {
         token: String,
         fixtureId: Int,
     ): Response<FixtureResponseBody>
+
+    //    Get match fixtures
+    suspend fun getMatchFixtures(
+        token: String
+    ): Response<FixturesResponseBody>
 
     //    Upload match commentary
     suspend fun uploadMatchCommentary(

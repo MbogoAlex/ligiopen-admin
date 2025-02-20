@@ -132,6 +132,7 @@ fun HomeScreen(
             }
             HomeTabs.FIXTURES -> {
                 FixturesScreenComposable(
+                    navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                     modifier = Modifier
                         .weight(1f)
                 )

@@ -12,6 +12,7 @@ import com.admin.ligiopen.data.network.models.match.commentary.MatchCommentaryRe
 import com.admin.ligiopen.data.network.models.match.fixture.FixtureCreationRequest
 import com.admin.ligiopen.data.network.models.match.fixture.FixtureResponseBody
 import com.admin.ligiopen.data.network.models.match.fixture.FixtureUpdateRequest
+import com.admin.ligiopen.data.network.models.match.fixture.FixturesResponseBody
 import com.admin.ligiopen.data.network.models.match.location.LocationCreationRequest
 import com.admin.ligiopen.data.network.models.match.location.LocationUpdateRequest
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationResponseBody
@@ -103,6 +104,12 @@ interface ApiService {
         @Path("fixtureId") fixtureId: Int,
     ): Response<FixtureResponseBody>
 
+//    Get match fixtures
+    @GET("match-fixture/all")
+    suspend fun getMatchFixtures(
+    @Header("Authorization") token: String
+    ): Response<FixturesResponseBody>
+
 //    Upload match commentary
     @POST("match-commentary")
     suspend fun uploadMatchCommentary(
@@ -160,5 +167,6 @@ interface ApiService {
         @Part("data") clubAdditionRequest: ClubAdditionRequest,
         @Part logo: MultipartBody.Part
     ): Response<ClubResponseBody>
+
 
 }

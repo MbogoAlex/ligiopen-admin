@@ -12,6 +12,7 @@ import com.admin.ligiopen.data.network.models.match.commentary.MatchCommentaryRe
 import com.admin.ligiopen.data.network.models.match.fixture.FixtureCreationRequest
 import com.admin.ligiopen.data.network.models.match.fixture.FixtureResponseBody
 import com.admin.ligiopen.data.network.models.match.fixture.FixtureUpdateRequest
+import com.admin.ligiopen.data.network.models.match.fixture.FixturesResponseBody
 import com.admin.ligiopen.data.network.models.match.location.LocationCreationRequest
 import com.admin.ligiopen.data.network.models.match.location.LocationUpdateRequest
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationResponseBody
@@ -102,6 +103,11 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.getMatchFixture(
             token = "Bearer $token",
             fixtureId = fixtureId
+        )
+
+    override suspend fun getMatchFixtures(token: String): Response<FixturesResponseBody> =
+        apiService.getMatchFixtures(
+            token = "Bearer $token"
         )
 
     override suspend fun uploadMatchCommentary(

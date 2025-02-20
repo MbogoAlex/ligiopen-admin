@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.admin.ligiopen.ui.screens.auth.LoginViewModel
 import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionViewModel
 import com.admin.ligiopen.ui.screens.match.clubs.ClubsViewModel
+import com.admin.ligiopen.ui.screens.match.fixtures.FixturesViewModel
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionVewModel
 import com.admin.ligiopen.ui.screens.match.location.LocationsViewModel
 import com.admin.ligiopen.ui.screens.start.SplashViewModel
@@ -52,6 +53,13 @@ object AppViewModelFactory {
 
         initializer {
             ClubAdditionViewModel(
+                apiRepository = ligiopenApplication().container.apiRepository,
+                dbRepository = ligiopenApplication().container.dbRepository
+            )
+        }
+
+        initializer {
+            FixturesViewModel(
                 apiRepository = ligiopenApplication().container.apiRepository,
                 dbRepository = ligiopenApplication().container.dbRepository
             )
