@@ -17,12 +17,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,8 +34,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -39,6 +45,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.admin.ligiopen.AppViewModelFactory
+import com.admin.ligiopen.R
 import com.admin.ligiopen.data.network.enums.LoadingStatus
 import com.admin.ligiopen.data.network.models.club.ClubData
 import com.admin.ligiopen.data.network.models.club.clubs
@@ -50,6 +57,7 @@ import com.admin.ligiopen.utils.screenWidth
 @Composable
 fun ClubsScreenComposable(
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
+    navigateToClubAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -87,7 +95,8 @@ fun ClubsScreenComposable(
     ) {
         ClubsScreen(
             clubs = uiState.clubs,
-            loadingStatus = uiState.loadingStatus
+            loadingStatus = uiState.loadingStatus,
+            navigateToClubAdditionScreen = navigateToClubAdditionScreen
         )
     }
 }
@@ -96,11 +105,12 @@ fun ClubsScreenComposable(
 fun ClubsScreen(
     clubs: List<ClubData>,
     loadingStatus: LoadingStatus,
+    navigateToClubAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ }) {
+            FloatingActionButton(onClick = navigateToClubAdditionScreen) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add new club"
@@ -120,6 +130,50 @@ fun ClubsScreen(
                         horizontal = screenWidth(x = 16.0)
                     )
             ) {
+                TextField(
+                    label = {
+                        Text(
+                            text = "Club name",
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.search),
+                            contentDescription = null
+                        )
+                    },
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    value = "",
+                    shape = RoundedCornerShape(
+                        screenWidth(x = 10.0)
+                    ),
+                    onValueChange = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                Column {
+                    Card(
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                    .padding(screenWidth(x = 8.0))
+                        ) {
+                            Text(text = "Nairobi")
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = null
+                            )
+                        }
+
+                    }
+                }
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                 if(loadingStatus == LoadingStatus.LOADING) {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -193,7 +247,8 @@ fun ClubsScreenPreview() {
     LigiopenadminTheme {
         ClubsScreen(
             clubs = clubs,
-            loadingStatus = LoadingStatus.INITIAL
+            loadingStatus = LoadingStatus.INITIAL,
+            navigateToClubAdditionScreen = {}
         )
     }
 }

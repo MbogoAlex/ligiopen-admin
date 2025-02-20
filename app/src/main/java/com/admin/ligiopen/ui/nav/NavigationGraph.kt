@@ -11,6 +11,8 @@ import com.admin.ligiopen.ui.screens.auth.LoginScreenComposable
 import com.admin.ligiopen.ui.screens.auth.LoginScreenDestination
 import com.admin.ligiopen.ui.screens.home.HomeScreenComposable
 import com.admin.ligiopen.ui.screens.home.HomeScreenDestination
+import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionScreenComposable
+import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionScreenDestination
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenComposable
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenDestination
 import com.admin.ligiopen.ui.screens.start.SplashScreenComposable
@@ -69,11 +71,22 @@ fun NavigationGraph(
                 },
                 navigateToLocationAdditionScreen = {
                     navController.navigate(LocationAdditionScreenDestination.route)
+                },
+                navigateToClubAdditionScreen = {
+                    navController.navigate(ClubAdditionScreenDestination.route)
                 }
             )
         }
         composable(LocationAdditionScreenDestination.route) {
             LocationAdditionScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        composable(ClubAdditionScreenDestination.route) {
+            ClubAdditionScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }

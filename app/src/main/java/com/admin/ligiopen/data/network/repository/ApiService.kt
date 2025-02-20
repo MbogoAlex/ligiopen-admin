@@ -2,6 +2,8 @@ package com.admin.ligiopen.data.network.repository
 
 import com.admin.ligiopen.data.network.models.auth.UserLoginRequestBody
 import com.admin.ligiopen.data.network.models.auth.UserLoginResponseBody
+import com.admin.ligiopen.data.network.models.club.ClubAdditionRequest
+import com.admin.ligiopen.data.network.models.club.ClubResponseBody
 import com.admin.ligiopen.data.network.models.club.ClubsResponseBody
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryCreationRequest
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryUpdateRequest
@@ -149,5 +151,14 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("clubId") clubId: Int,
     ): Response<ClubsResponseBody>
+
+//    Add club
+    @Multipart
+    @POST("club")
+    suspend fun addClub(
+        @Header("Authorization") token: String,
+        @Part("data") clubAdditionRequest: ClubAdditionRequest,
+        @Part logo: MultipartBody.Part
+    ): Response<ClubResponseBody>
 
 }

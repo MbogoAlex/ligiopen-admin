@@ -255,7 +255,7 @@ fun LoginScreen(
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Button(
-            enabled = isButtonEnabled,
+            enabled = isButtonEnabled && loginStatus != LoginStatus.LOADING,
             onClick = onLoginUser,
             modifier = Modifier
                 .fillMaxWidth()

@@ -2,6 +2,8 @@ package com.admin.ligiopen.data.network.repository
 
 import com.admin.ligiopen.data.network.models.auth.UserLoginRequestBody
 import com.admin.ligiopen.data.network.models.auth.UserLoginResponseBody
+import com.admin.ligiopen.data.network.models.club.ClubAdditionRequest
+import com.admin.ligiopen.data.network.models.club.ClubResponseBody
 import com.admin.ligiopen.data.network.models.club.ClubsResponseBody
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryCreationRequest
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryUpdateRequest
@@ -16,6 +18,10 @@ import com.admin.ligiopen.data.network.models.match.location.MatchLocationRespon
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationsResponseBody
 import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.Header
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
 
 interface ApiRepository {
 
@@ -117,5 +123,12 @@ interface ApiRepository {
         token: String,
         clubId: Int,
     ): Response<ClubsResponseBody>
+
+    //    Add club
+    suspend fun addClub(
+        token: String,
+        clubAdditionRequest: ClubAdditionRequest,
+        logo: MultipartBody.Part
+    ): Response<ClubResponseBody>
 
 }

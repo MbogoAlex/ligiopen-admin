@@ -4,7 +4,10 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -18,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.admin.ligiopen.R
@@ -28,6 +32,8 @@ import com.admin.ligiopen.ui.screens.match.location.LocationsScreenComposable
 import com.admin.ligiopen.ui.screens.news.NewsScreenComposable
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
 import com.admin.ligiopen.utils.screenFontSize
+import com.admin.ligiopen.utils.screenHeight
+import com.admin.ligiopen.utils.screenWidth
 
 object HomeScreenDestination: AppNavigation {
     override val title: String = "Home screen"
@@ -38,6 +44,7 @@ object HomeScreenDestination: AppNavigation {
 fun HomeScreenComposable(
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
     navigateToLocationAdditionScreen: () -> Unit,
+    navigateToClubAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -83,7 +90,8 @@ fun HomeScreenComposable(
                 selectedTab = it
             },
             navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
-            navigateToLocationAdditionScreen = navigateToLocationAdditionScreen
+            navigateToLocationAdditionScreen = navigateToLocationAdditionScreen,
+            navigateToClubAdditionScreen = navigateToClubAdditionScreen
         )
     }
 }
@@ -95,16 +103,29 @@ fun HomeScreen(
     onChangeTab: (tab: HomeTabs) -> Unit,
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
     navigateToLocationAdditionScreen: () -> Unit,
+    navigateToClubAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        Text(
+            text = "Ligiopen: ADMIN / ${selectedTab.name.replace("_", " ").replaceFirstChar { it.uppercase() }}",
+            fontSize = screenFontSize(x = 14.0).sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(
+                    top = screenHeight(x = 16.0),
+                    start = screenWidth(x = 16.0)
+                )
+        )
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
         when(selectedTab) {
             HomeTabs.CLUBS -> {
                 ClubsScreenComposable(
                     navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+                    navigateToClubAdditionScreen = navigateToClubAdditionScreen,
                     modifier = Modifier
                         .weight(1f)
                 )
@@ -205,6 +226,7 @@ fun HomeScreenPreview() {
                 selectedTab = it
             },
             navigateToLoginScreenWithArgs = {email, password ->  },
+            navigateToClubAdditionScreen = {},
             navigateToLocationAdditionScreen = { /*TODO*/ }
         )
     }
