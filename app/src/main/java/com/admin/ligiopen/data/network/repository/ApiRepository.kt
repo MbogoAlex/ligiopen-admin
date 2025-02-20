@@ -86,7 +86,8 @@ interface ApiRepository {
 
     //    Get match fixtures
     suspend fun getMatchFixtures(
-        token: String
+        token: String,
+        status: String?,
     ): Response<FixturesResponseBody>
 
     //    Upload match commentary

@@ -27,6 +27,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("auth/login")
@@ -107,7 +108,8 @@ interface ApiService {
 //    Get match fixtures
     @GET("match-fixture/all")
     suspend fun getMatchFixtures(
-    @Header("Authorization") token: String
+    @Header("Authorization") token: String,
+    @Query("status") status: String?,
     ): Response<FixturesResponseBody>
 
 //    Upload match commentary

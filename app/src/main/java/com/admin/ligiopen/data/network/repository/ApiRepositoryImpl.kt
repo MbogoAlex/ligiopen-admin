@@ -105,9 +105,10 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             fixtureId = fixtureId
         )
 
-    override suspend fun getMatchFixtures(token: String): Response<FixturesResponseBody> =
+    override suspend fun getMatchFixtures(token: String, status: String?): Response<FixturesResponseBody> =
         apiService.getMatchFixtures(
-            token = "Bearer $token"
+            token = "Bearer $token",
+            status = status
         )
 
     override suspend fun uploadMatchCommentary(

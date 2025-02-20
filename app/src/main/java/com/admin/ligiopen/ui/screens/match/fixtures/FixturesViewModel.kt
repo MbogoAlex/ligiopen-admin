@@ -33,7 +33,8 @@ class FixturesViewModel(
         viewModelScope.launch {
             try {
                val response = apiRepository.getMatchFixtures(
-                   token = uiState.value.userAccount.token
+                   token = uiState.value.userAccount.token,
+                   status = null
                )
 
                 if(response.isSuccessful) {

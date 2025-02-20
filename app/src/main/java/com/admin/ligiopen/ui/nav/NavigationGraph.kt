@@ -13,6 +13,8 @@ import com.admin.ligiopen.ui.screens.home.HomeScreenComposable
 import com.admin.ligiopen.ui.screens.home.HomeScreenDestination
 import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionScreenComposable
 import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionScreenDestination
+import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScreenComposable
+import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScreenDestination
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenComposable
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenDestination
 import com.admin.ligiopen.ui.screens.start.SplashScreenComposable
@@ -74,6 +76,9 @@ fun NavigationGraph(
                 },
                 navigateToClubAdditionScreen = {
                     navController.navigate(ClubAdditionScreenDestination.route)
+                },
+                navigateToPostMatchScreen = {
+                    navController.navigate("${HighlightsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -87,6 +92,21 @@ fun NavigationGraph(
 
         composable(ClubAdditionScreenDestination.route) {
             ClubAdditionScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        composable(
+            HighlightsScreenDestination.routeWithPostMatchId,
+            arguments = listOf(
+                navArgument(HighlightsScreenDestination.postMatchId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            HighlightsScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }

@@ -1,5 +1,6 @@
 package com.admin.ligiopen.ui.screens.match.fixtures
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +56,7 @@ import com.admin.ligiopen.utils.screenWidth
 
 @Composable
 fun FixturesScreenComposable(
+    navigateToPostMatchScreen: (postMatchId: String) -> Unit,
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -92,7 +94,8 @@ fun FixturesScreenComposable(
     ) {
         FixturesScreen(
             fixtures = uiState.fixtures,
-            loadingStatus = uiState.loadingStatus
+            loadingStatus = uiState.loadingStatus,
+            navigateToPostMatchScreen = navigateToPostMatchScreen
         )
     }
 }
@@ -101,6 +104,7 @@ fun FixturesScreenComposable(
 fun FixturesScreen(
     fixtures: List<FixtureData>,
     loadingStatus: LoadingStatus,
+    navigateToPostMatchScreen: (postMatchId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -123,7 +127,10 @@ fun FixturesScreen(
         } else {
             LazyColumn {
                 items(fixtures) { fixture ->
-                    FixtureCard(fixtureData = fixture)
+                    FixtureCard(
+                        fixtureData = fixture,
+                        navigateToPostMatchScreen = navigateToPostMatchScreen
+                    )
                     Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 }
             }
@@ -135,10 +142,16 @@ fun FixturesScreen(
 @Composable
 fun FixtureCard(
     fixtureData: FixtureData,
+    navigateToPostMatchScreen: (postMatchId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    Column {
+    Column(
+        modifier = Modifier
+            .clickable {
+                navigateToPostMatchScreen(fixtureData.postMatchAnalysisId.toString())
+            }
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -258,7 +271,9 @@ fun FixtureCard(
 
 
             TextButton(
-                onClick = { /*TODO*/ }
+                onClick = {
+                    navigateToPostMatchScreen(fixtureData.postMatchAnalysisId.toString())
+                }
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -303,7 +318,8 @@ fun FixturesScreenPreview() {
     LigiopenadminTheme {
         FixturesScreen(
             fixtures = fixtures,
-            loadingStatus = LoadingStatus.LOADING
+            loadingStatus = LoadingStatus.LOADING,
+            navigateToPostMatchScreen = {}
         )
     }
 }
