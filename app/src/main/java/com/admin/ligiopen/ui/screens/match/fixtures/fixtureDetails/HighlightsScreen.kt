@@ -76,11 +76,11 @@ fun HighlightsScreenComposable(
             tab = HighlightsScreenTabs.STATS,
             icon = R.drawable.stats
         ),
-        HighlightsScreenTabItem(
-            name = "Edit",
-            tab = HighlightsScreenTabs.EDIT,
-            icon = R.drawable.edit
-        ),
+//        HighlightsScreenTabItem(
+//            name = "Edit",
+//            tab = HighlightsScreenTabs.EDIT,
+//            icon = R.drawable.edit
+//        ),
     )
     var currentTab by rememberSaveable {
         mutableStateOf(HighlightsScreenTabs.SUMMARY)

@@ -131,7 +131,7 @@ interface ApiService {
     suspend fun uploadMatchCommentaryFiles(
         @Header("Authorization") token: String,
         @Path("commentaryId") commentaryId: Int,
-        @Part files: List<MultipartBody.Part>,
+        @Part("file") files: List<MultipartBody.Part>,
     ): Response<MatchCommentaryResponseBody>
 
 //    Get match commentary
