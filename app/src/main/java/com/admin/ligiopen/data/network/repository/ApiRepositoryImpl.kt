@@ -17,6 +17,7 @@ import com.admin.ligiopen.data.network.models.match.location.LocationCreationReq
 import com.admin.ligiopen.data.network.models.match.location.LocationUpdateRequest
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationResponseBody
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationsResponseBody
+import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import okhttp3.MultipartBody
 import retrofit2.Response
 
@@ -178,5 +179,11 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             token = "Bearer $token",
             clubAdditionRequest = clubAdditionRequest,
             logo = logo
+        )
+
+    override suspend fun getPlayer(token: String, playerId: Int): Response<PlayerResponseBody> =
+        apiService.getPlayer(
+            token = "Bearer $token",
+            playerId = playerId
         )
 }

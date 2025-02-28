@@ -17,6 +17,7 @@ import com.admin.ligiopen.data.network.models.match.location.LocationCreationReq
 import com.admin.ligiopen.data.network.models.match.location.LocationUpdateRequest
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationResponseBody
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationsResponseBody
+import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -171,5 +172,11 @@ interface ApiService {
         @Part logo: MultipartBody.Part
     ): Response<ClubResponseBody>
 
+//    Get player
+    @GET("player/{playerId}")
+    suspend fun getPlayer(
+        @Header("Authorization") token: String,
+        @Path("playerId") playerId: Int,
+    ): Response<PlayerResponseBody>
 
 }

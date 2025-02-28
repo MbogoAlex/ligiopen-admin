@@ -305,7 +305,7 @@ fun EventUploadScreen(
                     value = minute,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Text
+                        keyboardType = KeyboardType.Number
                     ),
                     shape = RoundedCornerShape(screenWidth(x = 8.0)),
                     onValueChange = onChangeMinute,
@@ -897,91 +897,93 @@ fun OwnGoalFieldComposable(
     searchMainPlayerText: String,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = "Own scorer:")
-        Spacer(modifier = Modifier.weight(1f))
-        if(mainPlayer != null) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-            ) {
-                Text(text = mainPlayer.name)
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = if(mainPlayer.home) "HOME" else "AWAY",
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                AsyncImage(
-                    model = ImageRequest.Builder(context = LocalContext.current)
-                        .data(mainPlayer.clubLogo)
-                        .crossfade(true)
-                        .build(),
-                    placeholder = painterResource(id = R.drawable.loading_img),
-                    error = painterResource(id = R.drawable.ic_broken_image),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "Club logo",
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Own scorer:")
+            Spacer(modifier = Modifier.weight(1f))
+            if(mainPlayer != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .size(screenWidth(x = 24.0))
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(screenWidth(x = 10.0)))
-                )
+                ) {
+                    Text(text = mainPlayer.name)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = if(mainPlayer.home) "HOME" else "AWAY",
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    AsyncImage(
+                        model = ImageRequest.Builder(context = LocalContext.current)
+                            .data(mainPlayer.clubLogo)
+                            .crossfade(true)
+                            .build(),
+                        placeholder = painterResource(id = R.drawable.loading_img),
+                        error = painterResource(id = R.drawable.ic_broken_image),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "Club logo",
+                        modifier = Modifier
+                            .size(screenWidth(x = 24.0))
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(screenWidth(x = 10.0)))
+                    )
+                }
             }
         }
-    }
-    OutlinedTextFieldComposable(
-        label = "Own scorer",
-        value = searchMainPlayerText,
-        keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Done,
-            keyboardType = KeyboardType.Text
-        ),
-        onValueChange = onSearchMainPlayer,
-        modifier = Modifier
-            .fillMaxWidth()
-    )
-    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-    if(mainPlayerClubDataList.isNotEmpty()) {
-        Box(
+        OutlinedTextFieldComposable(
+            label = "Own scorer",
+            value = searchMainPlayerText,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Text
+            ),
+            onValueChange = onSearchMainPlayer,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(screenHeight(x = 80.0))
-                .padding(
-                    vertical = screenHeight(x = 8.0),
-                    horizontal = screenWidth(x = 8.0)
-                )
-
-        ) {
-            Column(
+        )
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+        if(mainPlayerClubDataList.isNotEmpty()) {
+            Box(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth()
+                    .height(screenHeight(x = 80.0))
+                    .padding(
+                        vertical = screenHeight(x = 8.0),
+                        horizontal = screenWidth(x = 8.0)
+                    )
+
             ) {
-                mainPlayerClubDataList.filter { player ->
-                    !player.bench
-                }.forEach { player ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clickable {
-                                onSelectMainPlayer(player)
-                            }
-                    ) {
-                        Text(text = player.name)
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            text = if(player.home) "HOME" else "AWAY",
-                            fontSize = screenFontSize(x = 14.0).sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        TextButton(onClick = { onSelectMainPlayer(player) }) {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    mainPlayerClubDataList.filter { player ->
+                        !player.bench
+                    }.forEach { player ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clickable {
+                                    onSelectMainPlayer(player)
+                                }
+                        ) {
+                            Text(text = player.name)
+                            Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = "Select",
-                                fontSize = screenFontSize(x = 14.0).sp
+                                text = if(player.home) "HOME" else "AWAY",
+                                fontSize = screenFontSize(x = 14.0).sp,
+                                fontWeight = FontWeight.Bold
                             )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            TextButton(onClick = { onSelectMainPlayer(player) }) {
+                                Text(
+                                    text = "Select",
+                                    fontSize = screenFontSize(x = 14.0).sp
+                                )
+                            }
                         }
                     }
                 }
@@ -1279,7 +1281,7 @@ fun SubstitutionFieldComposable(
             }
         }
         OutlinedTextFieldComposable(
-            label = "Subsitute",
+            label = "Substitute",
             value = searchMainPlayerText,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
@@ -1341,22 +1343,22 @@ fun SubstitutionFieldComposable(
         ) {
             Text(text = "Out:")
             Spacer(modifier = Modifier.weight(1f))
-            if(mainPlayer != null) {
+            if(secondaryPlayer != null) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                 ) {
-                    Text(text = mainPlayer.name)
+                    Text(text = secondaryPlayer.name)
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = if(mainPlayer.home) "HOME" else "AWAY",
+                        text = if(secondaryPlayer.home) "HOME" else "AWAY",
                         fontSize = screenFontSize(x = 14.0).sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                     AsyncImage(
                         model = ImageRequest.Builder(context = LocalContext.current)
-                            .data(mainPlayer.clubLogo)
+                            .data(secondaryPlayer.clubLogo)
                             .crossfade(true)
                             .build(),
                         placeholder = painterResource(id = R.drawable.loading_img),

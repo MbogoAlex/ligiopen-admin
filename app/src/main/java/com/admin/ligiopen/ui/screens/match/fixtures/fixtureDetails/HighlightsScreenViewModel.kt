@@ -63,6 +63,50 @@ class HighlightsScreenViewModel(
         }
     }
 
+    fun getMainPlayer(playerId: Int) {
+        viewModelScope.launch {
+            try {
+               val response = apiRepository.getPlayer(
+                   token = uiState.value.userAccount.token,
+                   playerId = playerId
+               )
+
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            mainPlayer = response.body()?.data!!
+                        )
+                    }
+                }
+
+            } catch (e: Exception) {
+
+            }
+        }
+    }
+
+    fun getSecondaryPlayer(playerId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = apiRepository.getPlayer(
+                    token = uiState.value.userAccount.token,
+                    playerId = playerId
+                )
+
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            secondaryPlayer = response.body()?.data!!
+                        )
+                    }
+                }
+
+            } catch (e: Exception) {
+
+            }
+        }
+    }
+
     fun getInitialData() {
         viewModelScope.launch {
             while (uiState.value.userAccount.id == 0) {

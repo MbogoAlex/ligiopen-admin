@@ -10,5 +10,7 @@ data class HalfTimeEventData(
     val minute: String,
     val matchEventType: MatchEventType,
     val mainPlayerId: Int?,
-    val files: List<FileData>
+    val files: List<FileData>,
+    val awayClubScore: Int?,
+    val homeClubScore: Int?,
 )
