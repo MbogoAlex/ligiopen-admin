@@ -127,11 +127,12 @@ interface ApiService {
     ): Response<MatchCommentaryResponseBody>
 
 //    Upload commentary files
+    @Multipart
     @PUT("match-event/files/{commentaryId}")
     suspend fun uploadMatchCommentaryFiles(
         @Header("Authorization") token: String,
         @Path("commentaryId") commentaryId: Int,
-        @Part("file") files: List<MultipartBody.Part>,
+        @Part files: MutableList<MultipartBody.Part?>,
     ): Response<MatchCommentaryResponseBody>
 
 //    Get match commentary
@@ -159,7 +160,7 @@ interface ApiService {
     suspend fun getClub(
         @Header("Authorization") token: String,
         @Path("clubId") clubId: Int,
-    ): Response<ClubsResponseBody>
+    ): Response<ClubResponseBody>
 
 //    Add club
     @Multipart

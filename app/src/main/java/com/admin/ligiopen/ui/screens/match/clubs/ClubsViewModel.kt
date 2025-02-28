@@ -24,11 +24,11 @@ class ClubsViewModel(
     val uiState: StateFlow<ClubsUiData> = _uiState.asStateFlow()
 
     private fun getClubs() {
-        _uiState.update {
-            it.copy(
-                loadingStatus = LoadingStatus.LOADING
-            )
-        }
+//        _uiState.update {
+//            it.copy(
+//                loadingStatus = LoadingStatus.LOADING
+//            )
+//        }
         viewModelScope.launch {
             try {
                val response = apiRepository.getClubs(

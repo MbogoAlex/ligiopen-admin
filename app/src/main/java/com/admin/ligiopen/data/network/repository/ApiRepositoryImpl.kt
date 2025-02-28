@@ -132,7 +132,7 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
     override suspend fun uploadMatchCommentaryFiles(
         token: String,
         commentaryId: Int,
-        files: List<MultipartBody.Part>
+        files: MutableList<MultipartBody.Part?>
     ): Response<MatchCommentaryResponseBody> =
         apiService.uploadMatchCommentaryFiles(
             token = "Bearer $token",
@@ -163,7 +163,7 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             token = "Bearer $token"
         )
 
-    override suspend fun getClub(token: String, clubId: Int): Response<ClubsResponseBody> =
+    override suspend fun getClub(token: String, clubId: Int): Response<ClubResponseBody> =
         apiService.getClub(
             token = "Bearer $token",
             clubId = clubId

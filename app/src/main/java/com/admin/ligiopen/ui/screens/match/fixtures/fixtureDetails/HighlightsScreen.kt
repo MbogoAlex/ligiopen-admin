@@ -1,7 +1,6 @@
 package com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,11 +17,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,27 +33,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.admin.ligiopen.AppViewModelFactory
 import com.admin.ligiopen.R
 import com.admin.ligiopen.ui.nav.AppNavigation
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.lineup.PlayersLineupScreenComposable
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.stats.MatchStatisticsScreenComposable
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.summary.MatchSummaryComposable
+import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.timeline.MatchTimelineScreenComposable
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
 import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenWidth
 
 object HighlightsScreenDestination: AppNavigation {
-    override val route: String = "highlights screen"
-    override val title: String = "Highlights-screen"
+    override val route: String = "highlights-screen"
+    override val title: String = "Highlights screen"
     val postMatchId: String = "postMatchId"
-    val routeWithPostMatchId = "$route/{$postMatchId}"
+    val fixtureId: String = "fixtureId"
+    val routeWithPostMatchIdAndFixtureId = "$route/{$postMatchId}/{$fixtureId}"
 }
 
 @Composable
 fun HighlightsScreenComposable(
+    navigateToEventUploadScreen: (fixtureId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: HighlightsScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+
+
     val tabs = listOf(
         HighlightsScreenTabItem(
             name = "Summary",
@@ -95,11 +104,13 @@ fun HighlightsScreenComposable(
                 .safeDrawingPadding()
         ) {
             HighlightsScreen(
+                fixtureId = uiState.fixtureId,
                 tabs = tabs,
                 currentTab = currentTab,
                 onChangeTab = {
                     currentTab = it
                 },
+                navigateToEventUploadScreen = navigateToEventUploadScreen,
                 navigateToPreviousScreen = navigateToPreviousScreen
             )
         }
@@ -109,9 +120,11 @@ fun HighlightsScreenComposable(
 
 @Composable
 fun HighlightsScreen(
+    fixtureId: String?,
     tabs: List<HighlightsScreenTabItem>,
     currentTab: HighlightsScreenTabs,
     onChangeTab: (tab: HighlightsScreenTabs) -> Unit,
+    navigateToEventUploadScreen: (fixtureId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -187,15 +200,12 @@ fun HighlightsScreen(
                     )
                 }
                 HighlightsScreenTabs.TIMELINE -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
+                    MatchTimelineScreenComposable(
+                        navigateToEventUploadScreen = navigateToEventUploadScreen,
+                        fixtureId = fixtureId,
                         modifier = Modifier
-                            .fillMaxSize()
                             .weight(1f)
-                            .background(MaterialTheme.colorScheme.background)
-                    ) {
-                        Text(text = "Timeline")
-                    }
+                    )
                 }
                 HighlightsScreenTabs.LINEUPS -> {
                     PlayersLineupScreenComposable(
@@ -293,11 +303,13 @@ fun HighlightsScreenPreview() {
     }
     LigiopenadminTheme {
         HighlightsScreen(
+            fixtureId = null,
             tabs = tabs,
             currentTab = currentTab,
             onChangeTab = {
                 currentTab = it
             },
+            navigateToEventUploadScreen = {},
             navigateToPreviousScreen = {}
         )
     }

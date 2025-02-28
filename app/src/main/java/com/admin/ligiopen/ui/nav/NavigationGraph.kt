@@ -15,6 +15,8 @@ import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionScreenComposable
 import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionScreenDestination
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScreenComposable
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScreenDestination
+import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.commentary.EventUploadScreenComposable
+import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.commentary.EventUploadScreenDestination
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenComposable
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenDestination
 import com.admin.ligiopen.ui.screens.start.SplashScreenComposable
@@ -77,8 +79,8 @@ fun NavigationGraph(
                 navigateToClubAdditionScreen = {
                     navController.navigate(ClubAdditionScreenDestination.route)
                 },
-                navigateToPostMatchScreen = {
-                    navController.navigate("${HighlightsScreenDestination.route}/${it}")
+                navigateToPostMatchScreen = {postMatchId, fixtureId ->
+                    navController.navigate("${HighlightsScreenDestination.route}/${postMatchId}/${fixtureId}")
                 }
             )
         }
@@ -99,14 +101,34 @@ fun NavigationGraph(
         }
 
         composable(
-            HighlightsScreenDestination.routeWithPostMatchId,
+            HighlightsScreenDestination.routeWithPostMatchIdAndFixtureId,
             arguments = listOf(
                 navArgument(HighlightsScreenDestination.postMatchId) {
+                    type = NavType.StringType
+                },
+                navArgument(HighlightsScreenDestination.fixtureId) {
                     type = NavType.StringType
                 }
             )
         ) {
             HighlightsScreenComposable(
+                navigateToEventUploadScreen = {
+                    navController.navigate("${EventUploadScreenDestination.route}/${it}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            EventUploadScreenDestination.routeWithFixtureId,
+            arguments = listOf(
+                navArgument(EventUploadScreenDestination.matchFixtureId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            EventUploadScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }

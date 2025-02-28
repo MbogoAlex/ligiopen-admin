@@ -19,11 +19,6 @@ import com.admin.ligiopen.data.network.models.match.location.MatchLocationRespon
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationsResponseBody
 import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
 
 interface ApiRepository {
 
@@ -106,7 +101,7 @@ interface ApiRepository {
     suspend fun uploadMatchCommentaryFiles(
         token: String,
         commentaryId: Int,
-        files: List<MultipartBody.Part>,
+        files: MutableList<MultipartBody.Part?>,
     ): Response<MatchCommentaryResponseBody>
 
     //    Get match commentary
@@ -130,7 +125,7 @@ interface ApiRepository {
     suspend fun getClub(
         token: String,
         clubId: Int,
-    ): Response<ClubsResponseBody>
+    ): Response<ClubResponseBody>
 
     //    Add club
     suspend fun addClub(

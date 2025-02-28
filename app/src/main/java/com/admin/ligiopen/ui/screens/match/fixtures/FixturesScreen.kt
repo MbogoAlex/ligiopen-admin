@@ -56,7 +56,7 @@ import com.admin.ligiopen.utils.screenWidth
 
 @Composable
 fun FixturesScreenComposable(
-    navigateToPostMatchScreen: (postMatchId: String) -> Unit,
+    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String) -> Unit,
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -104,7 +104,7 @@ fun FixturesScreenComposable(
 fun FixturesScreen(
     fixtures: List<FixtureData>,
     loadingStatus: LoadingStatus,
-    navigateToPostMatchScreen: (postMatchId: String) -> Unit,
+    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -131,7 +131,9 @@ fun FixturesScreen(
                         fixtureData = fixture,
                         navigateToPostMatchScreen = navigateToPostMatchScreen
                     )
-                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                    Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
                 }
             }
 
@@ -142,14 +144,14 @@ fun FixturesScreen(
 @Composable
 fun FixtureCard(
     fixtureData: FixtureData,
-    navigateToPostMatchScreen: (postMatchId: String) -> Unit,
+    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     Column(
         modifier = Modifier
             .clickable {
-                navigateToPostMatchScreen(fixtureData.postMatchAnalysisId.toString())
+                navigateToPostMatchScreen(fixtureData.postMatchAnalysisId.toString(), fixtureData.matchFixtureId.toString())
             }
     ) {
         Row(
@@ -228,9 +230,8 @@ fun FixtureCard(
             }
         }
 
-        Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
+
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
 
         Row(
             modifier = Modifier
@@ -239,17 +240,30 @@ fun FixtureCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             val matchStatusColor = when (fixtureData.matchStatus) {
-                MatchStatus.PENDING -> Color(0xFF808080)
-                MatchStatus.PLAYING -> Color(0xFF00C853)
-                MatchStatus.COMPLETED -> Color(0xFF2962FF)
-                MatchStatus.CANCELLED -> Color(0xFFD32F2F)
+                MatchStatus.PENDING -> Color(0xFF9E9E9E) // Gray - Neutral for pending matches
+                MatchStatus.COMPLETED -> Color(0xFF4CAF50) // Green - Indicates match completion
+                MatchStatus.CANCELLED -> Color(0xFFF44336) // Red - Signifies cancellation
+                MatchStatus.FIRST_HALF -> Color(0xFFFFC107) // Amber - Active but early stage
+                MatchStatus.HALF_TIME -> Color(0xFFFF9800) // Orange - Signals break time
+                MatchStatus.SECOND_HALF -> Color(0xFFFFC107) // Amber - Ongoing second half
+                MatchStatus.EXTRA_TIME_FIRST_HALF -> Color(0xFFFF5722) // Deep Orange - More intensity
+                MatchStatus.EXTRA_TIME_HALF_TIME -> Color(0xFFFF9800) // Orange - Half-time in extra time
+                MatchStatus.EXTRA_TIME_SECOND_HALF -> Color(0xFFFF5722) // Deep Orange - More intensity
+                MatchStatus.PENALTY_SHOOTOUT -> Color(0xFF673AB7) // Purple - Indicates a high-stakes moment
             }
+
 
             val matchStatusIcon = when (fixtureData.matchStatus) {
                 MatchStatus.PENDING -> R.drawable.clock // Clock icon
-                MatchStatus.PLAYING -> R.drawable.ball // Soccer ball icon
                 MatchStatus.COMPLETED -> R.drawable.check_mark // Checkmark icon
                 MatchStatus.CANCELLED -> R.drawable.close // Cross icon
+                MatchStatus.FIRST_HALF -> R.drawable.ball
+                MatchStatus.HALF_TIME -> R.drawable.half_time
+                MatchStatus.SECOND_HALF -> R.drawable.ball
+                MatchStatus.EXTRA_TIME_FIRST_HALF -> R.drawable.ball
+                MatchStatus.EXTRA_TIME_HALF_TIME -> R.drawable.half_time
+                MatchStatus.EXTRA_TIME_SECOND_HALF -> R.drawable.ball
+                MatchStatus.PENALTY_SHOOTOUT -> R.drawable.ball
             }
 
             Icon(
@@ -272,7 +286,7 @@ fun FixtureCard(
 
             TextButton(
                 onClick = {
-                    navigateToPostMatchScreen(fixtureData.postMatchAnalysisId.toString())
+                    navigateToPostMatchScreen(fixtureData.postMatchAnalysisId.toString(), fixtureData.matchFixtureId.toString())
                 }
             ) {
                 Row(
@@ -319,7 +333,7 @@ fun FixturesScreenPreview() {
         FixturesScreen(
             fixtures = fixtures,
             loadingStatus = LoadingStatus.LOADING,
-            navigateToPostMatchScreen = {}
+            navigateToPostMatchScreen = {postMatchId, fixtureId ->  }
         )
     }
 }

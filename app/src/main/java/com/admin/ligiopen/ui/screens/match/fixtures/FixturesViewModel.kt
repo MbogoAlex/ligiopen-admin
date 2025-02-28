@@ -24,11 +24,11 @@ class FixturesViewModel(
     val uiState: StateFlow<FixturesUiData> = _uiState.asStateFlow()
 
     private fun getMatchFixtures() {
-        _uiState.update {
-            it.copy(
-                loadingStatus = LoadingStatus.LOADING
-            )
-        }
+//        _uiState.update {
+//            it.copy(
+//                loadingStatus = LoadingStatus.LOADING
+//            )
+//        }
 
         viewModelScope.launch {
             try {
