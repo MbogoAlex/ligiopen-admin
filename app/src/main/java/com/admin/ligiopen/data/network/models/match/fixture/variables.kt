@@ -3,7 +3,7 @@ package com.admin.ligiopen.data.network.models.match.fixture
 import com.admin.ligiopen.data.network.models.club.club
 
 val fixture = FixtureData(
-    matchFixtureId = 1,
+    matchFixtureId = 0,
     matchLocationId = 1,
     postMatchAnalysisId = 1,
     homeClub = club,
@@ -18,7 +18,7 @@ val fixture = FixtureData(
 
 val fixtures = List(10) {
     FixtureData(
-        matchFixtureId = 1 + it,
+        matchFixtureId = 0 + it,
         matchLocationId = 1 + it,
         postMatchAnalysisId = 1 + it,
         homeClub = club,

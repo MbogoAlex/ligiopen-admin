@@ -51,6 +51,7 @@ import com.admin.ligiopen.data.network.models.match.fixture.fixture
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationData
 import com.admin.ligiopen.data.network.models.match.location.matchLocation
 import com.admin.ligiopen.ui.nav.AppNavigation
+import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.lineup.PlayerInLineup
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.lineup.PlayersLineupScreenComposable
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.stats.MatchStatisticsScreenComposable
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.summary.MatchSummaryComposable
@@ -142,6 +143,7 @@ fun HighlightsScreenComposable(
                 awayClub = uiState.matchFixtureData.awayClub,
                 homeClub = uiState.matchFixtureData.homeClub,
                 tabs = tabs,
+                playersInLineup = uiState.playersInLineup,
                 currentTab = currentTab,
                 onChangeTab = {
                     currentTab = it
@@ -164,6 +166,7 @@ fun HighlightsScreen(
     awayClub: ClubData,
     homeClub: ClubData,
     fixtureId: String?,
+    playersInLineup: List<PlayerInLineup>,
     tabs: List<HighlightsScreenTabItem>,
     currentTab: HighlightsScreenTabs,
     onChangeTab: (tab: HighlightsScreenTabs) -> Unit,
@@ -255,6 +258,8 @@ fun HighlightsScreen(
                 }
                 HighlightsScreenTabs.TIMELINE -> {
                     MatchTimelineScreenComposable(
+                        commentaries = commentaries,
+                        matchStatus = matchFixtureData.matchStatus,
                         navigateToEventUploadScreen = navigateToEventUploadScreen,
                         fixtureId = fixtureId,
                         modifier = Modifier
@@ -263,12 +268,15 @@ fun HighlightsScreen(
                 }
                 HighlightsScreenTabs.LINEUPS -> {
                     PlayersLineupScreenComposable(
+                        playersInLineup = playersInLineup,
+                        matchFixtureData = matchFixtureData,
                         modifier = Modifier
                             .weight(1f)
                     )
                 }
                 HighlightsScreenTabs.STATS -> {
                     MatchStatisticsScreenComposable(
+                        matchFixtureData = matchFixtureData,
                         modifier = Modifier
                             .weight(1f)
                     )
@@ -366,6 +374,7 @@ fun HighlightsScreenPreview() {
             matchLocation = matchLocation,
             fixtureId = null,
             tabs = tabs,
+            playersInLineup = emptyList(),
             currentTab = currentTab,
             onChangeTab = {
                 currentTab = it

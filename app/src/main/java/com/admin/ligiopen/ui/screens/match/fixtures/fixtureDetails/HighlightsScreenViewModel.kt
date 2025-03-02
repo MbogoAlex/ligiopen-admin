@@ -5,9 +5,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.admin.ligiopen.data.network.enums.LoadingStatus
+import com.admin.ligiopen.data.network.models.match.commentary.MatchCommentaryData
+import com.admin.ligiopen.data.network.models.match.fixture.FixtureData
+import com.admin.ligiopen.data.network.models.player.PlayerData
+import com.admin.ligiopen.data.network.models.player.PlayerState
 import com.admin.ligiopen.data.network.repository.ApiRepository
 import com.admin.ligiopen.data.room.db.userAccountDt
 import com.admin.ligiopen.data.room.repository.DBRepository
+import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.lineup.PlayerInLineup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -99,9 +104,12 @@ class HighlightsScreenViewModel(
                 )
 
                 if(response.isSuccessful) {
+
                     _uiState.update {
                         it.copy(
-                            matchFixtureData = response.body()?.data!!
+                            matchFixtureData = response.body()?.data!!,
+                            awayClubPlayers = response.body()?.data?.awayClub?.players!!,
+                            homeClubPlayers = response.body()?.data?.homeClub?.players!!,
                         )
                     }
                 } else {
@@ -166,6 +174,7 @@ class HighlightsScreenViewModel(
             getMatchCommentary()
             getMatchLocation()
             getMatchFixture()
+            loadPlayersLineup()
         }
     }
 
@@ -192,6 +201,43 @@ class HighlightsScreenViewModel(
                 }
             }
         }
+    }
+
+    private fun loadPlayersLineup() {
+        viewModelScope.launch {
+            while (uiState.value.matchFixtureData.matchFixtureId == 0 || uiState.value.commentaries.isEmpty()) {
+                delay(1000)
+            }
+            val allPlayers = uiState.value.awayClubPlayers + uiState.value.homeClubPlayers
+            _uiState.update {
+                it.copy(
+                    playersInLineup = allPlayers.map { player -> playerToPlayerInLineup(player, uiState.value.matchFixtureData, uiState.value.commentaries) }
+                )
+            }
+        }
+    }
+
+    private fun playerToPlayerInLineup(player: PlayerData, fixture: FixtureData, commentaries: List<MatchCommentaryData>): PlayerInLineup {
+        return PlayerInLineup(
+            position = player.playerPosition,
+            name = player.username,
+            team = if(player.clubId == fixture.awayClub.clubId) fixture.awayClub.name else fixture.homeClub.name,
+            home = player.clubId == fixture.homeClub.clubId,
+            number = player.number,
+            substituted = commentaries.any { commentary ->
+            commentary.substitutionEvent?.mainPlayerId == player.playerId ||
+                    commentary.substitutionEvent?.subbedOutPlayerId == player.playerId },
+            yellowCard = commentaries.any { commentary ->
+                commentary.foulEvent?.mainPlayerId == player.playerId && commentary.foulEvent.isYellowCard
+            },
+            redCard = commentaries.any { commentary ->
+                commentary.foulEvent?.mainPlayerId == player.playerId && commentary.foulEvent.isRedCard
+            },
+            scored = commentaries.any { commentary ->
+                commentary.goalEvent?.mainPlayerId == player.playerId
+            },
+            bench = player.playerState == PlayerState.BENCH
+        )
     }
 
     init {

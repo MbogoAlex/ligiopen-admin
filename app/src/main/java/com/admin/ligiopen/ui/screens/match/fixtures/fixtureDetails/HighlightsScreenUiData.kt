@@ -12,6 +12,7 @@ import com.admin.ligiopen.data.network.models.player.PlayerData
 import com.admin.ligiopen.data.network.models.player.player
 import com.admin.ligiopen.data.room.db.userAccountDt
 import com.admin.ligiopen.data.room.models.UserAccount
+import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.lineup.PlayerInLineup
 
 data class HighlightsScreenUiData(
     val userAccount: UserAccount = userAccountDt,
@@ -19,6 +20,9 @@ data class HighlightsScreenUiData(
     val fixtureId: String? = null,
     val awayClubScore: Int = 0,
     val homeClubScore: Int = 0,
+    val awayClubPlayers: List<PlayerData> = emptyList(),
+    val homeClubPlayers: List<PlayerData> = emptyList(),
+    val playersInLineup: List<PlayerInLineup> = emptyList(),
     val matchFixtureData: FixtureData = fixture,
     val matchLocationData: MatchLocationData = matchLocation,
     val commentaries: List<MatchCommentaryData> = emptyList(),

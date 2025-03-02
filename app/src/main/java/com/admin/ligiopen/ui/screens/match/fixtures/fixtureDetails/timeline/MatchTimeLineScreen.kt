@@ -57,20 +57,22 @@ import com.admin.ligiopen.utils.screenWidth
 
 @Composable
 fun MatchTimelineScreenComposable(
+    matchStatus: MatchStatus,
+    commentaries: List<MatchCommentaryData>,
     fixtureId: String?,
     navigateToEventUploadScreen: (fixtureId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: HighlightsScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
-    val uiState by viewModel.uiState.collectAsState()
+//    val viewModel: HighlightsScreenViewModel = viewModel(factory = AppViewModelFactory.Factory)
+//    val uiState by viewModel.uiState.collectAsState()
 
     Box(
         modifier = modifier
     ) {
         MatchTimelineScreen(
-            matchStatus = uiState.matchFixtureData.matchStatus,
+            matchStatus = matchStatus,
             fixtureId = fixtureId,
-            matchCommentaries = uiState.commentaries,
+            matchCommentaries = commentaries,
             navigateToEventUploadScreen = navigateToEventUploadScreen
         )
     }

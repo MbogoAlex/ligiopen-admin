@@ -1,11 +1,7 @@
 package com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.lineup
 
-enum class PlayerPosition {
-    GOALKEEPER,
-    DEFENDER,
-    MIDFIELDER,
-    FORWARD,
-}
+import com.admin.ligiopen.data.network.models.player.PlayerPosition
+
 
 data class PlayerInLineup (
     val position: PlayerPosition,

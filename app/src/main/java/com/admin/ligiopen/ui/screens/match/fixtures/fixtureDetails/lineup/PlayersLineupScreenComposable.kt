@@ -13,19 +13,36 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.admin.ligiopen.AppViewModelFactory
 import com.admin.ligiopen.R
+import com.admin.ligiopen.data.network.models.match.fixture.FixtureData
+import com.admin.ligiopen.data.network.models.match.fixture.fixture
+import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScreenViewModel
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
 import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenHeight
@@ -33,19 +50,26 @@ import com.admin.ligiopen.utils.screenWidth
 
 @Composable
 fun PlayersLineupScreenComposable(
+    playersInLineup: List<PlayerInLineup>,
+    matchFixtureData: FixtureData,
     modifier: Modifier = Modifier
 ) {
+
     Box(
         modifier = modifier
             .safeDrawingPadding()
     ) {
-        PlayersLineupScreen(playersInLineup = playersInlineup)
+        PlayersLineupScreen(
+            playersInLineup = playersInLineup,
+            matchFixtureData = matchFixtureData
+        )
     }
 }
 
 @Composable
 fun PlayersLineupScreen(
     playersInLineup: List<PlayerInLineup>,
+    matchFixtureData: FixtureData,
     modifier: Modifier = Modifier
 ) {
     // Separate players by position
@@ -64,26 +88,42 @@ fun PlayersLineupScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "ORL",
+                text = matchFixtureData.homeClub.clubAbbreviation ?: "${matchFixtureData.homeClub.name.take(3)} FC",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = screenFontSize(x = 18.0).sp,
                 fontWeight = FontWeight.Bold
             )
-            Image(
-                painter = painterResource(id = R.drawable.club1),
-                contentDescription = null,
+            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(matchFixtureData.homeClub.clubLogo.link)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(id = R.drawable.loading_img),
+                error = painterResource(id = R.drawable.ic_broken_image),
+                contentScale = ContentScale.Crop,
+                contentDescription = "Home club logo",
                 modifier = Modifier
                     .size(screenWidth(x = 24.0))
+                    .clip(CircleShape)
             )
             Spacer(modifier = Modifier.weight(1f))
-            Image(
-                painter = painterResource(id = R.drawable.club2),
-                contentDescription = null,
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(matchFixtureData.awayClub.clubLogo.link)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(id = R.drawable.loading_img),
+                error = painterResource(id = R.drawable.ic_broken_image),
+                contentScale = ContentScale.Crop,
+                contentDescription = "Away club logo",
                 modifier = Modifier
                     .size(screenWidth(x = 24.0))
+                    .clip(CircleShape)
             )
+            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
             Text(
-                text = "ALT",
+                text = matchFixtureData.awayClub.clubAbbreviation ?: "${matchFixtureData.awayClub.name.take(3)} FC",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = screenFontSize(x = 18.0).sp,
                 fontWeight = FontWeight.Bold
@@ -197,6 +237,7 @@ fun PlayerLineupCell(
 fun PlayersLineupScreenPreview() {
     LigiopenadminTheme {
         PlayersLineupScreen(
+            matchFixtureData = fixture,
             playersInLineup = playersInlineup
         )
     }
