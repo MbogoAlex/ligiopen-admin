@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -47,6 +48,7 @@ import com.admin.ligiopen.data.network.models.club.ClubData
 import com.admin.ligiopen.data.network.models.match.commentary.MatchCommentaryData
 import com.admin.ligiopen.data.network.models.match.commentary.matchCommentaries
 import com.admin.ligiopen.data.network.models.match.events.MatchEventType
+import com.admin.ligiopen.data.network.models.match.fixture.MatchStatus
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScreenViewModel
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
 import com.admin.ligiopen.utils.screenFontSize
@@ -66,6 +68,7 @@ fun MatchTimelineScreenComposable(
         modifier = modifier
     ) {
         MatchTimelineScreen(
+            matchStatus = uiState.matchFixtureData.matchStatus,
             fixtureId = fixtureId,
             matchCommentaries = uiState.commentaries,
             navigateToEventUploadScreen = navigateToEventUploadScreen
@@ -75,6 +78,7 @@ fun MatchTimelineScreenComposable(
 
 @Composable
 fun MatchTimelineScreen(
+    matchStatus: MatchStatus,
     fixtureId: String?,
     matchCommentaries: List<MatchCommentaryData>,
     navigateToEventUploadScreen: (fixtureId: String) -> Unit,
@@ -82,11 +86,13 @@ fun MatchTimelineScreen(
 ) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { navigateToEventUploadScreen(fixtureId!!) }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.edit),
-                    contentDescription = "Edit commentary"
-                )
+            if(matchStatus != MatchStatus.CANCELLED && matchStatus != MatchStatus.COMPLETED) {
+                FloatingActionButton(onClick = { navigateToEventUploadScreen(fixtureId!!) }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.add),
+                        contentDescription = "Edit commentary"
+                    )
+                }
             }
         }
     ) {
@@ -135,7 +141,7 @@ fun SingleMatchCommentaryComposable(
         MatchEventType.THROW_IN -> R.drawable.throw_in
         MatchEventType.GOAL_KICK -> R.drawable.goal_kick
         MatchEventType.KICK_OFF -> R.drawable.kicking_ball
-        MatchEventType.HALF_TIME -> R.drawable.half
+        MatchEventType.HALF_TIME -> R.drawable.half_2
         MatchEventType.FULL_TIME -> R.drawable.full_time2
     }
 
@@ -444,7 +450,7 @@ fun SingleMatchCommentaryComposable(
                                     modifier = Modifier
                                         .size(screenWidth(x = 48.0))
                                         .clip(CircleShape)
-                                        .background(Color.Red)
+                                        .background(Color.White)
                                 ) {
                                     AsyncImage(
                                         model = ImageRequest.Builder(context = LocalContext.current)
@@ -1570,7 +1576,7 @@ fun SingleMatchCommentaryComposable(
                             )
                             Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                             Text(
-                                text = matchCommentaryData.halfTimeEvent?.homeClubScore.toString(),
+                                text = matchCommentaryData.fullTimeEvent?.homeClubScore.toString(),
                                 fontSize = screenFontSize(x = 16.0).sp
                             )
                             Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
@@ -1581,7 +1587,7 @@ fun SingleMatchCommentaryComposable(
                             )
                             Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                             Text(
-                                text = matchCommentaryData.halfTimeEvent?.awayClubScore.toString(),
+                                text = matchCommentaryData.fullTimeEvent?.awayClubScore.toString(),
                                 fontSize = screenFontSize(x = 16.0).sp
                             )
                             Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
@@ -1613,6 +1619,7 @@ fun SingleMatchCommentaryComposable(
 fun MatchTimelineScreenPreview() {
     LigiopenadminTheme {
         MatchTimelineScreen(
+            matchStatus = MatchStatus.FIRST_HALF,
             fixtureId = null,
             matchCommentaries = matchCommentaries,
             navigateToEventUploadScreen = {}

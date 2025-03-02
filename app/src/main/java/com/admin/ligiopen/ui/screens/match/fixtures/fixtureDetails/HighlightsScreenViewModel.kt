@@ -27,6 +27,7 @@ class HighlightsScreenViewModel(
 
     private val postMatchId: String? = savedStateHandle[HighlightsScreenDestination.postMatchId]
     private val fixtureId: String? = savedStateHandle[HighlightsScreenDestination.fixtureId]
+    private val locationId: String? = savedStateHandle[HighlightsScreenDestination.locationId]
 
     private fun getMatchCommentary() {
         viewModelScope.launch {
@@ -40,6 +41,8 @@ class HighlightsScreenViewModel(
                     _uiState.update {
                         it.copy(
                             commentaries = response.body()?.data?.minuteByMinuteCommentary!!,
+                            awayClubScore = response.body()?.data?.awayClubScore ?: 0,
+                            homeClubScore = response.body()?.data?.homeClubScore ?: 0,
                             loadingStatus = LoadingStatus.SUCCESS
                         )
                     }
@@ -59,6 +62,54 @@ class HighlightsScreenViewModel(
                     )
                 }
                 Log.e("matchHighlights", "e: $e")
+            }
+        }
+    }
+
+    private fun getMatchLocation() {
+        viewModelScope.launch {
+            try {
+               val response = apiRepository.getMatchLocation(
+                   token = uiState.value.userAccount.token,
+                   locationId = locationId!!.toInt()
+               )
+
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            matchLocationData = response.body()?.data!!
+                        )
+                    }
+                } else {
+                    Log.e("matchLocation", "response: $response")
+                }
+
+            } catch (e: Exception) {
+                Log.e("matchLocation", "e: $e")
+            }
+        }
+    }
+
+    private fun getMatchFixture() {
+        viewModelScope.launch {
+            try {
+                val response = apiRepository.getMatchFixture(
+                    token = uiState.value.userAccount.token,
+                    fixtureId = fixtureId!!.toInt()
+                )
+
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            matchFixtureData = response.body()?.data!!
+                        )
+                    }
+                } else {
+                    Log.e("matchFixture", "response: $response")
+                }
+
+            } catch (e: Exception) {
+                Log.e("matchFixture", "e: $e")
             }
         }
     }
@@ -113,6 +164,8 @@ class HighlightsScreenViewModel(
                 delay(1000)
             }
             getMatchCommentary()
+            getMatchLocation()
+            getMatchFixture()
         }
     }
 

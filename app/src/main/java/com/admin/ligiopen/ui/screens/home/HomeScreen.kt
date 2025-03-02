@@ -45,7 +45,7 @@ fun HomeScreenComposable(
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
     navigateToLocationAdditionScreen: () -> Unit,
     navigateToClubAdditionScreen: () -> Unit,
-    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String) -> Unit,
+    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String, locationId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -106,7 +106,7 @@ fun HomeScreen(
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
     navigateToLocationAdditionScreen: () -> Unit,
     navigateToClubAdditionScreen: () -> Unit,
-    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String) -> Unit,
+    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String, locationId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -233,7 +233,7 @@ fun HomeScreenPreview() {
             navigateToLoginScreenWithArgs = {email, password ->  },
             navigateToClubAdditionScreen = {},
             navigateToLocationAdditionScreen = { /*TODO*/ },
-            navigateToPostMatchScreen = {postMatchId, fixtureId ->  }
+            navigateToPostMatchScreen = {postMatchId, fixtureId, locationId ->  }
         )
     }
 }

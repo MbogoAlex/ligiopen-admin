@@ -10,6 +10,7 @@ data class ClubData(
     val clubLogo: FileData,
     val clubMainPhoto: FileData?,
     val name: String,
+    val clubAbbreviation: String?,
     val description: String,
     val country: String,
     val county: String,

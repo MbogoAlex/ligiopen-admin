@@ -10,6 +10,8 @@ data class FixtureData(
     val postMatchAnalysisId: Int,
     val homeClub: ClubData,
     val awayClub: ClubData,
+    val homeClubScore: Int?,
+    val awayClubScore: Int?,
     val createdAt: String,
     val matchDateTime: String,
     val matchStatus: MatchStatus,

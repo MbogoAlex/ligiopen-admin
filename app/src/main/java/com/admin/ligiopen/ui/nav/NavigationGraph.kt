@@ -79,8 +79,8 @@ fun NavigationGraph(
                 navigateToClubAdditionScreen = {
                     navController.navigate(ClubAdditionScreenDestination.route)
                 },
-                navigateToPostMatchScreen = {postMatchId, fixtureId ->
-                    navController.navigate("${HighlightsScreenDestination.route}/${postMatchId}/${fixtureId}")
+                navigateToPostMatchScreen = {postMatchId, fixtureId, locationId ->
+                    navController.navigate("${HighlightsScreenDestination.route}/${postMatchId}/${fixtureId}/${locationId}")
                 }
             )
         }
@@ -101,7 +101,7 @@ fun NavigationGraph(
         }
 
         composable(
-            HighlightsScreenDestination.routeWithPostMatchIdAndFixtureId,
+            HighlightsScreenDestination.routeWithPostMatchIdAndFixtureIdAndLocationId,
             arguments = listOf(
                 navArgument(HighlightsScreenDestination.postMatchId) {
                     type = NavType.StringType

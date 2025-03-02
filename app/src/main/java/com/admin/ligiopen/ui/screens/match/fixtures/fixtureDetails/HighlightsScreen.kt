@@ -1,6 +1,5 @@
 package com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -29,6 +29,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,9 +39,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.admin.ligiopen.AppViewModelFactory
 import com.admin.ligiopen.R
-import com.admin.ligiopen.data.network.enums.LoadingStatus
+import com.admin.ligiopen.data.network.models.club.ClubData
+import com.admin.ligiopen.data.network.models.club.club
+import com.admin.ligiopen.data.network.models.match.commentary.MatchCommentaryData
+import com.admin.ligiopen.data.network.models.match.commentary.matchCommentaries
+import com.admin.ligiopen.data.network.models.match.fixture.FixtureData
+import com.admin.ligiopen.data.network.models.match.fixture.fixture
+import com.admin.ligiopen.data.network.models.match.location.MatchLocationData
+import com.admin.ligiopen.data.network.models.match.location.matchLocation
 import com.admin.ligiopen.ui.nav.AppNavigation
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.lineup.PlayersLineupScreenComposable
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.stats.MatchStatisticsScreenComposable
@@ -54,7 +64,8 @@ object HighlightsScreenDestination: AppNavigation {
     override val title: String = "Highlights screen"
     val postMatchId: String = "postMatchId"
     val fixtureId: String = "fixtureId"
-    val routeWithPostMatchIdAndFixtureId = "$route/{$postMatchId}/{$fixtureId}"
+    val locationId: String = "locationId"
+    val routeWithPostMatchIdAndFixtureIdAndLocationId = "$route/{$postMatchId}/{$fixtureId}/{$locationId}"
 }
 
 @Composable
@@ -80,6 +91,7 @@ fun HighlightsScreenComposable(
             }
         }
     }
+
 
     val tabs = listOf(
         HighlightsScreenTabItem(
@@ -121,7 +133,14 @@ fun HighlightsScreenComposable(
                 .safeDrawingPadding()
         ) {
             HighlightsScreen(
+                commentaries = uiState.commentaries,
+                matchFixtureData = uiState.matchFixtureData,
+                matchLocation = uiState.matchLocationData,
                 fixtureId = uiState.fixtureId,
+                homeClubScore = uiState.homeClubScore,
+                awayClubScore = uiState.awayClubScore,
+                awayClub = uiState.matchFixtureData.awayClub,
+                homeClub = uiState.matchFixtureData.homeClub,
                 tabs = tabs,
                 currentTab = currentTab,
                 onChangeTab = {
@@ -137,6 +156,13 @@ fun HighlightsScreenComposable(
 
 @Composable
 fun HighlightsScreen(
+    commentaries: List<MatchCommentaryData>,
+    matchFixtureData: FixtureData,
+    matchLocation: MatchLocationData,
+    homeClubScore: Int,
+    awayClubScore: Int,
+    awayClub: ClubData,
+    homeClub: ClubData,
     fixtureId: String?,
     tabs: List<HighlightsScreenTabItem>,
     currentTab: HighlightsScreenTabs,
@@ -180,14 +206,16 @@ fun HighlightsScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.club1),
-                        contentDescription = null,
+                    AsyncImage(
+                        model = matchFixtureData.homeClub.clubLogo.link,
+                        contentDescription = matchFixtureData.homeClub.name,
                         modifier = Modifier
                             .size(screenWidth(x = 24.0))
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
                     )
                     Text(
-                        text = "0",
+                        text = homeClubScore.toString(),
                         fontSize = screenFontSize(x = 16.0).sp
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
@@ -197,21 +225,30 @@ fun HighlightsScreen(
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                     Text(
-                        text = "2",
+                        text = awayClubScore.toString(),
                         fontSize = screenFontSize(x = 16.0).sp
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Image(
-                        painter = painterResource(id = R.drawable.club2),
-                        contentDescription = null,
+                    AsyncImage(
+                        model = matchFixtureData.awayClub.clubLogo.link,
+                        contentDescription = matchFixtureData.awayClub.name,
                         modifier = Modifier
                             .size(screenWidth(x = 24.0))
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
                     )
                 }
             }
             when(currentTab) {
                 HighlightsScreenTabs.SUMMARY -> {
                     MatchSummaryComposable(
+                        matchFixtureData = matchFixtureData,
+                        commentaries = commentaries,
+                        matchLocation = matchLocation,
+                        homeClub = homeClub,
+                        awayClub = awayClub,
+                        homeClubScore = homeClubScore,
+                        awayClubScore = awayClubScore,
                         modifier = Modifier
                             .weight(1f)
                     )
@@ -320,6 +357,13 @@ fun HighlightsScreenPreview() {
     }
     LigiopenadminTheme {
         HighlightsScreen(
+            commentaries = matchCommentaries,
+            awayClub = club,
+            homeClub = club,
+            matchFixtureData = fixture,
+            homeClubScore = 0,
+            awayClubScore = 0,
+            matchLocation = matchLocation,
             fixtureId = null,
             tabs = tabs,
             currentTab = currentTab,

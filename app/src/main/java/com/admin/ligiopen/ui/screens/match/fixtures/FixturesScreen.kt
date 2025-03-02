@@ -56,7 +56,7 @@ import com.admin.ligiopen.utils.screenWidth
 
 @Composable
 fun FixturesScreenComposable(
-    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String) -> Unit,
+    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String, locationId: String) -> Unit,
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -104,7 +104,7 @@ fun FixturesScreenComposable(
 fun FixturesScreen(
     fixtures: List<FixtureData>,
     loadingStatus: LoadingStatus,
-    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String) -> Unit,
+    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String, locationId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -144,14 +144,14 @@ fun FixturesScreen(
 @Composable
 fun FixtureCard(
     fixtureData: FixtureData,
-    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String) -> Unit,
+    navigateToPostMatchScreen: (postMatchId: String, fixtureId: String, locationId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     Column(
         modifier = Modifier
             .clickable {
-                navigateToPostMatchScreen(fixtureData.postMatchAnalysisId.toString(), fixtureData.matchFixtureId.toString())
+                navigateToPostMatchScreen(fixtureData.postMatchAnalysisId.toString(), fixtureData.matchFixtureId.toString(), fixtureData.matchLocationId.toString())
             }
     ) {
         Row(
@@ -176,7 +176,7 @@ fun FixtureCard(
                     Column {
                         Text(
                             text = fixtureData.homeClub.name,
-                            fontSize = screenFontSize(x = 14.0).sp
+                            fontSize = screenFontSize(x = 16.0).sp
                         )
                         Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
                         Text(
@@ -188,11 +188,36 @@ fun FixtureCard(
                 }
             }
 
-            Text(
-                text = "VS",
-                fontSize = screenFontSize(x = 16.0).sp,
-                fontWeight = FontWeight.Bold
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "VS",
+                    fontSize = screenFontSize(x = 16.0).sp,
+                    fontWeight = FontWeight.Bold
+                )
+                if(fixtureData.matchStatus != MatchStatus.CANCELLED && fixtureData.matchStatus != MatchStatus.PENDING) {
+                    Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = fixtureData.homeClubScore!!.toString(),
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
+                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                        Text(
+                            text = ":",
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
+                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                        Text(
+                            text = fixtureData.awayClubScore!!.toString(),
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
+                    }
+                }
+            }
 
             Box(
                 modifier = Modifier
@@ -208,7 +233,7 @@ fun FixtureCard(
                     ) {
                         Text(
                             text = fixtureData.awayClub.name,
-                            fontSize = screenFontSize(x = 14.0).sp
+                            fontSize = screenFontSize(x = 16.0).sp
                         )
                         Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
                         Text(
@@ -286,7 +311,7 @@ fun FixtureCard(
 
             TextButton(
                 onClick = {
-                    navigateToPostMatchScreen(fixtureData.postMatchAnalysisId.toString(), fixtureData.matchFixtureId.toString())
+                    navigateToPostMatchScreen(fixtureData.postMatchAnalysisId.toString(), fixtureData.matchFixtureId.toString(), fixtureData.matchLocationId.toString())
                 }
             ) {
                 Row(
@@ -333,7 +358,7 @@ fun FixturesScreenPreview() {
         FixturesScreen(
             fixtures = fixtures,
             loadingStatus = LoadingStatus.LOADING,
-            navigateToPostMatchScreen = {postMatchId, fixtureId ->  }
+            navigateToPostMatchScreen = {postMatchId, fixtureId, locationId ->  }
         )
     }
 }
