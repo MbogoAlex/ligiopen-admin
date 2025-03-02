@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -105,8 +106,10 @@ fun MatchTimelineScreen(
             Column(
                 modifier = Modifier
                     .padding(
-                        vertical = screenHeight(x = 16.0),
-                        horizontal = screenWidth(x = 16.0)
+                        start = screenWidth(x = 16.0),
+                        top = 0.dp,
+                        end = screenWidth(x = 16.0),
+                        bottom = screenHeight(x = 16.0),
                     )
             ) {
                 LazyColumn {

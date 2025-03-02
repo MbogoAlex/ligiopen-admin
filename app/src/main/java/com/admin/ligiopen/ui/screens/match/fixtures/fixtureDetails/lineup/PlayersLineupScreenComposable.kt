@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -79,8 +80,10 @@ fun PlayersLineupScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                vertical = screenHeight(x = 14.0),
-                horizontal = screenWidth(x = 14.0)
+                start = screenWidth(x = 16.0),
+                top = 0.dp,
+                end = screenWidth(x = 16.0),
+                bottom = screenHeight(x = 16.0),
             )
     ) {
         Row(
