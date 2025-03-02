@@ -78,7 +78,6 @@ fun PlayersLineupScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
             .padding(
                 vertical = screenHeight(x = 14.0),
                 horizontal = screenWidth(x = 14.0)

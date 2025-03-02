@@ -124,34 +124,28 @@ fun HighlightsScreenComposable(
     var currentTab by rememberSaveable {
         mutableStateOf(HighlightsScreenTabs.SUMMARY)
     }
-    ElevatedCard(
-        shape = RoundedCornerShape(0.dp),
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .safeDrawingPadding()
     ) {
-        Box(
-            modifier = Modifier
-                .safeDrawingPadding()
-        ) {
-            HighlightsScreen(
-                commentaries = uiState.commentaries,
-                matchFixtureData = uiState.matchFixtureData,
-                matchLocation = uiState.matchLocationData,
-                fixtureId = uiState.fixtureId,
-                homeClubScore = uiState.homeClubScore,
-                awayClubScore = uiState.awayClubScore,
-                awayClub = uiState.matchFixtureData.awayClub,
-                homeClub = uiState.matchFixtureData.homeClub,
-                tabs = tabs,
-                playersInLineup = uiState.playersInLineup,
-                currentTab = currentTab,
-                onChangeTab = {
-                    currentTab = it
-                },
-                navigateToEventUploadScreen = navigateToEventUploadScreen,
-                navigateToPreviousScreen = navigateToPreviousScreen
-            )
-        }
+        HighlightsScreen(
+            commentaries = uiState.commentaries,
+            matchFixtureData = uiState.matchFixtureData,
+            matchLocation = uiState.matchLocationData,
+            fixtureId = uiState.fixtureId,
+            homeClubScore = uiState.homeClubScore,
+            awayClubScore = uiState.awayClubScore,
+            awayClub = uiState.matchFixtureData.awayClub,
+            homeClub = uiState.matchFixtureData.homeClub,
+            tabs = tabs,
+            playersInLineup = uiState.playersInLineup,
+            currentTab = currentTab,
+            onChangeTab = {
+                currentTab = it
+            },
+            navigateToEventUploadScreen = navigateToEventUploadScreen,
+            navigateToPreviousScreen = navigateToPreviousScreen
+        )
     }
 
 }
@@ -178,127 +172,123 @@ fun HighlightsScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        ElevatedCard(
-            shape = RoundedCornerShape(0),
-        ) {
-            Row(
+        Row(
 //            horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(screenWidth(x = 8.0))
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(screenWidth(x = 8.0))
 
-            ) {
-                IconButton(onClick = navigateToPreviousScreen) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Previous screen"
-                    )
-                }
+        ) {
+            IconButton(onClick = navigateToPreviousScreen) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ligiopen_icon),
-                    contentDescription = null,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Previous screen"
                 )
-                Spacer(modifier = Modifier.width(screenWidth(x = 3.0)))
-                Text(
-                    text = currentTab.name,
-                    fontSize = screenFontSize(x = 16.0).sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AsyncImage(
-                        model = matchFixtureData.homeClub.clubLogo.link,
-                        contentDescription = matchFixtureData.homeClub.name,
-                        modifier = Modifier
-                            .size(screenWidth(x = 24.0))
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                    Text(
-                        text = homeClubScore.toString(),
-                        fontSize = screenFontSize(x = 16.0).sp
-                    )
-                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(
-                        text = ":",
-                        fontSize = screenFontSize(x = 16.0).sp
-                    )
-                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(
-                        text = awayClubScore.toString(),
-                        fontSize = screenFontSize(x = 16.0).sp
-                    )
-                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    AsyncImage(
-                        model = matchFixtureData.awayClub.clubLogo.link,
-                        contentDescription = matchFixtureData.awayClub.name,
-                        modifier = Modifier
-                            .size(screenWidth(x = 24.0))
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                }
             }
-            when(currentTab) {
-                HighlightsScreenTabs.SUMMARY -> {
-                    MatchSummaryComposable(
-                        matchFixtureData = matchFixtureData,
-                        commentaries = commentaries,
-                        matchLocation = matchLocation,
-                        homeClub = homeClub,
-                        awayClub = awayClub,
-                        homeClubScore = homeClubScore,
-                        awayClubScore = awayClubScore,
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                }
-                HighlightsScreenTabs.TIMELINE -> {
-                    MatchTimelineScreenComposable(
-                        commentaries = commentaries,
-                        matchStatus = matchFixtureData.matchStatus,
-                        navigateToEventUploadScreen = navigateToEventUploadScreen,
-                        fixtureId = fixtureId,
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                }
-                HighlightsScreenTabs.LINEUPS -> {
-                    PlayersLineupScreenComposable(
-                        playersInLineup = playersInLineup,
-                        matchFixtureData = matchFixtureData,
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                }
-                HighlightsScreenTabs.STATS -> {
-                    MatchStatisticsScreenComposable(
-                        matchFixtureData = matchFixtureData,
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                }
-
-                HighlightsScreenTabs.EDIT -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f)
-                    ) {
-                        Text(text = "Edit")
-                    }   
-                }
-            }
-            HighlightScreenBottomBar(
-                tabs = tabs,
-                currentTab = currentTab,
-                onChangeTab = onChangeTab
+            Icon(
+                painter = painterResource(id = R.drawable.ligiopen_icon),
+                contentDescription = null,
             )
+            Spacer(modifier = Modifier.width(screenWidth(x = 3.0)))
+            Text(
+                text = currentTab.name,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = matchFixtureData.homeClub.clubLogo.link,
+                    contentDescription = matchFixtureData.homeClub.name,
+                    modifier = Modifier
+                        .size(screenWidth(x = 24.0))
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                Text(
+                    text = homeClubScore.toString(),
+                    fontSize = screenFontSize(x = 16.0).sp
+                )
+                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                Text(
+                    text = ":",
+                    fontSize = screenFontSize(x = 16.0).sp
+                )
+                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                Text(
+                    text = awayClubScore.toString(),
+                    fontSize = screenFontSize(x = 16.0).sp
+                )
+                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                AsyncImage(
+                    model = matchFixtureData.awayClub.clubLogo.link,
+                    contentDescription = matchFixtureData.awayClub.name,
+                    modifier = Modifier
+                        .size(screenWidth(x = 24.0))
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
+        when(currentTab) {
+            HighlightsScreenTabs.SUMMARY -> {
+                MatchSummaryComposable(
+                    matchFixtureData = matchFixtureData,
+                    commentaries = commentaries,
+                    matchLocation = matchLocation,
+                    homeClub = homeClub,
+                    awayClub = awayClub,
+                    homeClubScore = homeClubScore,
+                    awayClubScore = awayClubScore,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+            HighlightsScreenTabs.TIMELINE -> {
+                MatchTimelineScreenComposable(
+                    commentaries = commentaries,
+                    matchStatus = matchFixtureData.matchStatus,
+                    navigateToEventUploadScreen = navigateToEventUploadScreen,
+                    fixtureId = fixtureId,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+            HighlightsScreenTabs.LINEUPS -> {
+                PlayersLineupScreenComposable(
+                    playersInLineup = playersInLineup,
+                    matchFixtureData = matchFixtureData,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+            HighlightsScreenTabs.STATS -> {
+                MatchStatisticsScreenComposable(
+                    matchFixtureData = matchFixtureData,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+
+            HighlightsScreenTabs.EDIT -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    Text(text = "Edit")
+                }
+            }
+        }
+        HighlightScreenBottomBar(
+            tabs = tabs,
+            currentTab = currentTab,
+            onChangeTab = onChangeTab
+        )
     }
 }
 
