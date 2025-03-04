@@ -17,7 +17,7 @@ class AppContainerImpl(context: Context) : AppContainer {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
-    private val baseUrl = "http://192.168.100.5:8000/api/"
+    private val baseUrl = "https://ligiopen-036cef24cac8.herokuapp.com/api/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)

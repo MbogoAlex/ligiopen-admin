@@ -767,13 +767,22 @@ fun MatchEventCell(
                             color = MaterialTheme.colorScheme.onBackground,
                             fontSize = screenFontSize(x = 14.0).sp,
                         )
-                        if(commentary.penaltyEvent!!.isScored) {
-                            Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                            Text(
-                                text = "(Scored)",
-                                fontSize = screenFontSize(x = 14.0).sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                        if(commentary.penaltyEvent?.isScored != null) {
+                            if(commentary.penaltyEvent.isScored) {
+                                Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+                                Text(
+                                    text = "(Scored)",
+                                    fontSize = screenFontSize(x = 14.0).sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+                                Text(
+                                    text = "(Missed)",
+                                    fontSize = screenFontSize(x = 14.0).sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         } else {
                             Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                             Text(

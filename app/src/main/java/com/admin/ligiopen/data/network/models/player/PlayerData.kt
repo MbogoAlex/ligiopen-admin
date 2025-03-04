@@ -12,7 +12,7 @@ data class PlayerData(
     val playerPosition: PlayerPosition,
     val age: Int,
     val height: Double,
-    val weight: Double,
+    val weight: Double?,
     val country: String,
     val county: String,
     val town: String,

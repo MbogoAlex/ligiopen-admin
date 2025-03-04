@@ -579,7 +579,7 @@ fun SingleMatchCommentaryComposable(
                             Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                             Text(
                                 fontSize = screenFontSize(x = 14.0).sp,
-                                text = matchCommentaryData.ownGoalEvent!!.summary,
+                                text = matchCommentaryData.ownGoalEvent?.summary ?: "Own goal by Gor Mahia team",
                                 fontWeight = FontWeight.W400
                             )
 

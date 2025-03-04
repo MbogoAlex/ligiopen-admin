@@ -1106,24 +1106,24 @@ fun FoulFieldComposable(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Offender:")
+            Text(text = "Victim:")
             Spacer(modifier = Modifier.weight(1f))
-            if(mainPlayer != null) {
+            if(secondaryPlayer != null) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                 ) {
-                    Text(text = mainPlayer.name)
+                    Text(text = secondaryPlayer.name)
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = if(mainPlayer.home) "HOME" else "AWAY",
+                        text = if(secondaryPlayer.home) "HOME" else "AWAY",
                         fontSize = screenFontSize(x = 14.0).sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                     AsyncImage(
                         model = ImageRequest.Builder(context = LocalContext.current)
-                            .data(mainPlayer.clubLogo)
+                            .data(secondaryPlayer.clubLogo)
                             .crossfade(true)
                             .build(),
                         placeholder = painterResource(id = R.drawable.loading_img),
@@ -1139,7 +1139,7 @@ fun FoulFieldComposable(
             }
         }
         OutlinedTextFieldComposable(
-            label = "Offender",
+            label = "Victim",
             value = searchSecondaryPlayerText,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
