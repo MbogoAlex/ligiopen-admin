@@ -17,6 +17,8 @@ import com.admin.ligiopen.data.network.models.match.location.LocationCreationReq
 import com.admin.ligiopen.data.network.models.match.location.LocationUpdateRequest
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationResponseBody
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationsResponseBody
+import com.admin.ligiopen.data.network.models.news.NewsResponseBody
+import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -140,5 +142,18 @@ interface ApiRepository {
         token: String,
         playerId: Int,
     ): Response<PlayerResponseBody>
+
+    //    Get all news
+
+    suspend fun getAllNews(
+        token: String,
+    ): Response<NewsResponseBody>
+
+    //    Get single news
+
+    suspend fun getSingleNews(
+        token: String,
+        newsId: Int,
+    ): Response<SingleNewsResponseBody>
 
 }

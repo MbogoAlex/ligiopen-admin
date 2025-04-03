@@ -152,6 +152,7 @@ fun HomeScreen(
 
             HomeTabs.NEWS -> {
                 NewsScreenComposable(
+                    navigateToNewsDetailsScreen = {},
                     modifier = Modifier
                         .weight(1f)
                 )

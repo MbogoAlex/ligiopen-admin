@@ -13,6 +13,7 @@ import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScr
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.commentary.EventUploadViewModel
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionVewModel
 import com.admin.ligiopen.ui.screens.match.location.LocationsViewModel
+import com.admin.ligiopen.ui.screens.news.NewsViewModel
 import com.admin.ligiopen.ui.screens.start.SplashViewModel
 
 object AppViewModelFactory {
@@ -80,6 +81,13 @@ object AppViewModelFactory {
                 apiRepository = ligiopenApplication().container.apiRepository,
                 dbRepository = ligiopenApplication().container.dbRepository,
                 savedStateHandle = this.createSavedStateHandle()
+            )
+        }
+
+        initializer {
+            NewsViewModel(
+                apiRepository = ligiopenApplication().container.apiRepository,
+                dbRepository = ligiopenApplication().container.dbRepository
             )
         }
 
