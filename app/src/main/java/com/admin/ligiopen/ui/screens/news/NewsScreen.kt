@@ -49,7 +49,7 @@ import java.time.LocalDateTime
 @Composable
 fun NewsScreenComposable(
     addTopPadding: Boolean = true,
-    navigateToNewsDetailsScreen: () -> Unit,
+    navigateToNewsDetailsScreen: (newsId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -73,7 +73,7 @@ fun NewsScreen(
     news: List<NewsDto>,
     addTopPadding: Boolean,
     loadingStatus: LoadingStatus,
-    navigateToNewsDetailsScreen: () -> Unit,
+    navigateToNewsDetailsScreen: (newsId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -123,7 +123,7 @@ fun NewsScreen(
                         Column(
                             modifier = Modifier
                                 .clickable {
-                                    navigateToNewsDetailsScreen()
+                                    navigateToNewsDetailsScreen(singleNews.id.toString())
                                 }
                         ) {
                             NewsTile(

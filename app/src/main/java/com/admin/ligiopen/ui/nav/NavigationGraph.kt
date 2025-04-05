@@ -19,6 +19,8 @@ import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.commentary.Ev
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.commentary.EventUploadScreenDestination
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenComposable
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenDestination
+import com.admin.ligiopen.ui.screens.news.NewsDetailsScreenComposable
+import com.admin.ligiopen.ui.screens.news.NewsDetailsScreenDestination
 import com.admin.ligiopen.ui.screens.start.SplashScreenComposable
 import com.admin.ligiopen.ui.screens.start.SplashScreenDestination
 
@@ -81,6 +83,9 @@ fun NavigationGraph(
                 },
                 navigateToPostMatchScreen = {postMatchId, fixtureId, locationId ->
                     navController.navigate("${HighlightsScreenDestination.route}/${postMatchId}/${fixtureId}/${locationId}")
+                },
+                navigateToNewsDetailsScreen = {
+                    navController.navigate("${NewsDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -129,6 +134,20 @@ fun NavigationGraph(
             )
         ) {
             EventUploadScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            NewsDetailsScreenDestination.routeWithNewsId,
+            arguments = listOf(
+                navArgument(NewsDetailsScreenDestination.newsId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            NewsDetailsScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }
