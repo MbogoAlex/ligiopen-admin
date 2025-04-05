@@ -14,9 +14,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -76,64 +81,80 @@ fun NewsScreen(
     navigateToNewsDetailsScreen: (newsId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = if(addTopPadding) modifier
-            .fillMaxSize()
-            .padding(
-                vertical = screenHeight(x = 16.0),
-                horizontal = screenWidth(x = 16.0)
-            ) else modifier
-            .fillMaxSize()
-            .padding(
-//                vertical = screenHeight(x = 16.0),
-                horizontal = screenWidth(x = 16.0)
-            )
-    ) {
-        if(loadingStatus == LoadingStatus.LOADING) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                CircularProgressIndicator()
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = {}) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add new club"
+                )
             }
-        } else {
-            if(news.isEmpty()) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    Text(
-                        text = "No news found",
-                        fontSize = screenFontSize(x = 14.0).sp
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(it)
+        ) {
+            Column(
+                modifier = if(addTopPadding) modifier
+                    .fillMaxSize()
+                    .padding(
+                        vertical = screenHeight(x = 16.0),
+                        horizontal = screenWidth(x = 16.0)
+                    ) else modifier
+                    .fillMaxSize()
+                    .padding(
+//                vertical = screenHeight(x = 16.0),
+                        horizontal = screenWidth(x = 16.0)
                     )
-                }
-            } else {
-                LazyColumn {
-                    item {
-                        NewsTile(
-                            news = news[0],
-                            fullScreen = true,
-                            modifier = Modifier
-                        )
-                        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+            ) {
+                if(loadingStatus == LoadingStatus.LOADING) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        CircularProgressIndicator()
                     }
-                    items(news) { singleNews ->
-                        Column(
+                } else {
+                    if(news.isEmpty()) {
+                        Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .clickable {
-                                    navigateToNewsDetailsScreen(singleNews.id.toString())
-                                }
+                                .fillMaxSize()
                         ) {
-                            NewsTile(
-                                news = singleNews,
-                                modifier = Modifier
+                            Text(
+                                text = "No news found",
+                                fontSize = screenFontSize(x = 14.0).sp
                             )
-                            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                        }
+                    } else {
+                        LazyColumn {
+                            item {
+                                NewsTile(
+                                    news = news[0],
+                                    fullScreen = true,
+                                    modifier = Modifier
+                                )
+                                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                            }
+                            items(news) { singleNews ->
+                                Column(
+                                    modifier = Modifier
+                                        .clickable {
+                                            navigateToNewsDetailsScreen(singleNews.id.toString())
+                                        }
+                                ) {
+                                    NewsTile(
+                                        news = singleNews,
+                                        modifier = Modifier
+                                    )
+                                    Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                                }
+                            }
+
                         }
                     }
-
                 }
             }
         }
