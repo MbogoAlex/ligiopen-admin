@@ -1,6 +1,8 @@
 package com.admin.ligiopen.ui.screens.news.newsManagement
 
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -20,14 +22,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -39,38 +47,100 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.admin.ligiopen.AppViewModelFactory
 import com.admin.ligiopen.R
+import com.admin.ligiopen.data.network.enums.LoadingStatus
 import com.admin.ligiopen.data.network.models.club.ClubData
 import com.admin.ligiopen.data.network.models.club.clubs
-import com.admin.ligiopen.ui.screens.match.clubs.ClubLogoUpload
+import com.admin.ligiopen.ui.nav.AppNavigation
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
 import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenHeight
 import com.admin.ligiopen.utils.screenWidth
 
+object NewsAdditionScreenDestination: AppNavigation {
+    override val title: String = "News addition screen"
+    override val route: String = "news-addition-screen"
+}
+
 @Composable
-fun NewsAdditionScreenComposable() {
+fun NewsAdditionScreenComposable(
+    navigateToPreviousScreen: () -> Unit,
+    navigateToNewsDetailsScreen: (newsId: String) -> Unit,
+) {
+    val context = LocalContext.current
+    val viewModel: NewsAdditionViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+    if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
+        navigateToNewsDetailsScreen(uiState.publishedNews.id.toString())
+        viewModel.resetStatus()
+    }
+
+    var showPublishPopup by rememberSaveable { mutableStateOf(false) }
+
+    var currentScreen by rememberSaveable { mutableStateOf(NewsAdditionScreenStage.CLUB_SELECTION_SECTION) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = {uri ->
+            if(uri != null) {
+                viewModel.changePhoto(uri)
+            }
+        }
+    )
+
+    if(showPublishPopup) {
+        PublishPopup(
+            onConfirm = {
+                viewModel.publishNews(context)
+                showPublishPopup = !showPublishPopup
+            },
+            onDismiss = { showPublishPopup = !showPublishPopup }
+        )
+    }
+
     Box(
         modifier = Modifier
             .safeDrawingPadding()
     ) {
         NewsAdditionScreen(
-            clubs = clubs,
-            selectedClubIds = listOf(1, 2, 5),
-            onSelectClub = {},
-            onRemoveClub = {},
-            coverPhoto = null,
-            onUploadCoverPhoto = {},
-            onRemoveCoverPhoto = {},
-            newsAdditionScreenStage = NewsAdditionScreenStage.CLUB_SELECTION_SECTION
+            title = uiState.title,
+            onChangeTitle = viewModel::changeTitle,
+            subtitle = uiState.subtitle,
+            onChangeSubTitle = viewModel::changeSubTitle,
+            coverPhoto = uiState.coverPhoto,
+            clubs = uiState.clubs,
+            selectedClubIds = uiState.selectedClubIds,
+            onSelectClub = viewModel::selectClub,
+            onRemoveClub = viewModel::removeClub,
+            onUploadCoverPhoto = {
+                galleryLauncher.launch("image/*")
+            },
+            onRemoveCoverPhoto = viewModel::removePhoto,
+            newsAdditionScreenStage = currentScreen,
+            onChangeScreen = {
+                currentScreen = it
+            },
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            onPublish = {
+                showPublishPopup = !showPublishPopup
+            },
+            buttonEnabled = uiState.buttonEnabled,
+            loadingStatus = uiState.loadingStatus
         )
     }
 }
 
 @Composable
 fun NewsAdditionScreen(
+    title: String,
+    subtitle: String,
+    onChangeTitle: (title: String) -> Unit,
+    onChangeSubTitle: (subTitle: String) -> Unit,
     clubs: List<ClubData>,
     selectedClubIds: List<Int>,
     onSelectClub: (clubId: Int) -> Unit,
@@ -79,6 +149,11 @@ fun NewsAdditionScreen(
     onUploadCoverPhoto: () -> Unit,
     onRemoveCoverPhoto: () -> Unit,
     newsAdditionScreenStage: NewsAdditionScreenStage,
+    navigateToPreviousScreen: () -> Unit,
+    onChangeScreen: (screen: NewsAdditionScreenStage) -> Unit,
+    onPublish: () -> Unit,
+    buttonEnabled: Boolean,
+    loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -95,14 +170,28 @@ fun NewsAdditionScreen(
                     selectedClubIds = selectedClubIds,
                     onSelectClub = onSelectClub,
                     onRemoveClub = onRemoveClub,
+                    navigateToPreviousScreen = navigateToPreviousScreen,
+                    navigateToNextScreen = {
+                        onChangeScreen(NewsAdditionScreenStage.HEADING_SECTION)
+                    },
                     clubs = clubs
                 )
             }
             NewsAdditionScreenStage.HEADING_SECTION -> {
                 NewsHeadingSectionScreen(
+                    title = title,
+                    onChangeTitle = onChangeTitle,
+                    subtitle = subtitle,
+                    onChangeSubTitle = onChangeSubTitle,
                     coverPhoto = coverPhoto,
                     onUploadCoverPhoto = onUploadCoverPhoto,
-                    onRemoveCoverPhoto = onRemoveCoverPhoto
+                    onRemoveCoverPhoto = onRemoveCoverPhoto,
+                    navigateToPreviousScreen = {
+                        onChangeScreen(NewsAdditionScreenStage.CLUB_SELECTION_SECTION)
+                    },
+                    onPublish = onPublish,
+                    buttonEnabled = buttonEnabled,
+                    loadingStatus = loadingStatus
                 )
             }
             NewsAdditionScreenStage.ITEMS_SECTION -> {}
@@ -116,6 +205,8 @@ fun ClubSelectionSectionScreen(
     selectedClubIds: List<Int>,
     onSelectClub: (clubId: Int) -> Unit,
     onRemoveClub: (clubId: Int) -> Unit,
+    navigateToPreviousScreen: () -> Unit,
+    navigateToNextScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -131,7 +222,7 @@ fun ClubSelectionSectionScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = { /*TODO*/ }
+                        onClick = navigateToPreviousScreen
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -165,7 +256,7 @@ fun ClubSelectionSectionScreen(
             }
         }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = navigateToNextScreen,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
@@ -203,7 +294,13 @@ fun SelectableClubCard(
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = {
+            if(selectedClubIds.contains(club.clubId)) {
+                onRemoveClub(club.clubId)
+            } else {
+                onSelectClub(club.clubId)
+            }
+        }) {
             Icon(
                 painter = painterResource(id = if(selectedClubIds.contains(club.clubId)) R.drawable.checked_box else R.drawable.unchecked_box),
                 contentDescription = "Select club"
@@ -214,9 +311,17 @@ fun SelectableClubCard(
 
 @Composable
 fun NewsHeadingSectionScreen(
+    title: String,
+    onChangeTitle: (title: String) -> Unit,
+    onChangeSubTitle: (subTitle: String) -> Unit,
+    subtitle: String,
     coverPhoto: Uri?,
     onUploadCoverPhoto: () -> Unit,
     onRemoveCoverPhoto: () -> Unit,
+    navigateToPreviousScreen: () -> Unit,
+    onPublish: () -> Unit,
+    buttonEnabled: Boolean,
+    loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -232,7 +337,7 @@ fun NewsHeadingSectionScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = { /*TODO*/ }
+                        onClick = navigateToPreviousScreen
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -259,12 +364,12 @@ fun NewsHeadingSectionScreen(
                             fontSize = screenFontSize(x = 14.0).sp
                         )
                     },
-                    value = "",
+                    value = title,
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
-                    onValueChange = {},
+                    onValueChange = onChangeTitle,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -276,12 +381,12 @@ fun NewsHeadingSectionScreen(
                             fontSize = screenFontSize(x = 14.0).sp
                         )
                     },
-                    value = "",
+                    value = subtitle,
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
-                    onValueChange = {},
+                    onValueChange = onChangeSubTitle,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -334,19 +439,31 @@ fun NewsHeadingSectionScreen(
             }
         }
         Button(
-            onClick = { /*TODO*/ },
+            enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
+            onClick = onPublish,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "Publish")
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Icon(
-                    painter = painterResource(id = R.drawable.save),
-                    contentDescription = "Publish news"
+            if(loadingStatus == LoadingStatus.LOADING) {
+                Text(
+                    text = "Publishing...",
+                    fontSize = screenFontSize(x = 14.0).sp
                 )
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = "Publish",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Icon(
+                        painter = painterResource(id = R.drawable.save),
+                        contentDescription = "Publish news"
+                    )
+                }
             }
         }
 
@@ -385,11 +502,55 @@ fun CoverPhotoUpload(
     }
 }
 
+@Composable
+fun PublishPopup(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = "Publish news",
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = "Are you sure you want to publish this news?",
+                fontSize = screenFontSize(x = 14.0).sp,
+            )
+        },
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = "Cancel",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(
+                    text = "Publish",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
+    )
+}
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun NewsAdditionScreenPreview() {
     LigiopenadminTheme {
         NewsAdditionScreen(
+            title = "",
+            onChangeTitle = {},
+            subtitle = "",
+            onChangeSubTitle = {},
             clubs = clubs,
             selectedClubIds = listOf(1, 2, 5),
             onSelectClub = {},
@@ -397,7 +558,12 @@ fun NewsAdditionScreenPreview() {
             coverPhoto = null,
             onUploadCoverPhoto = {},
             onRemoveCoverPhoto = {},
-            newsAdditionScreenStage = NewsAdditionScreenStage.HEADING_SECTION
+            newsAdditionScreenStage = NewsAdditionScreenStage.ITEMS_SECTION,
+            navigateToPreviousScreen = {},
+            onChangeScreen = {},
+            onPublish = {},
+            buttonEnabled = false,
+            loadingStatus = LoadingStatus.INITIAL
         )
     }
 }

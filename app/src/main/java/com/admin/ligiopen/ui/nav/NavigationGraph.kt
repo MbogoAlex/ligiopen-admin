@@ -21,6 +21,10 @@ import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenCompos
 import com.admin.ligiopen.ui.screens.match.location.LocationAdditionScreenDestination
 import com.admin.ligiopen.ui.screens.news.NewsDetailsScreenComposable
 import com.admin.ligiopen.ui.screens.news.NewsDetailsScreenDestination
+import com.admin.ligiopen.ui.screens.news.newsManagement.NewsAdditionScreenComposable
+import com.admin.ligiopen.ui.screens.news.newsManagement.NewsAdditionScreenDestination
+import com.admin.ligiopen.ui.screens.news.newsManagement.NewsItemAdditionScreenComposable
+import com.admin.ligiopen.ui.screens.news.newsManagement.NewsItemAdditionScreenDestination
 import com.admin.ligiopen.ui.screens.start.SplashScreenComposable
 import com.admin.ligiopen.ui.screens.start.SplashScreenDestination
 
@@ -86,6 +90,9 @@ fun NavigationGraph(
                 },
                 navigateToNewsDetailsScreen = {
                     navController.navigate("${NewsDetailsScreenDestination.route}/${it}")
+                },
+                navigateToNewsAdditionScreen = {
+                    navController.navigate(NewsAdditionScreenDestination.route)
                 }
             )
         }
@@ -148,6 +155,33 @@ fun NavigationGraph(
             )
         ) {
             NewsDetailsScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                },
+                navigateToNewsItemAdditionScreen = {
+                    navController.navigate("${NewsItemAdditionScreenDestination.route}/${it}")
+                }
+            )
+        }
+        composable(NewsAdditionScreenDestination.route) {
+            NewsAdditionScreenComposable(
+                navigateToNewsDetailsScreen = {
+                    navController.navigate("${NewsDetailsScreenDestination.route}/${it}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            NewsItemAdditionScreenDestination.routeWithNewsId,
+            arguments = listOf(
+                navArgument(NewsItemAdditionScreenDestination.newsId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            NewsItemAdditionScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }

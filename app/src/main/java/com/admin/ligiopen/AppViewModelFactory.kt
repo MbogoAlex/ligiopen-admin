@@ -15,6 +15,8 @@ import com.admin.ligiopen.ui.screens.match.location.LocationAdditionVewModel
 import com.admin.ligiopen.ui.screens.match.location.LocationsViewModel
 import com.admin.ligiopen.ui.screens.news.NewsDetailsViewModel
 import com.admin.ligiopen.ui.screens.news.NewsViewModel
+import com.admin.ligiopen.ui.screens.news.newsManagement.NewsAdditionViewModel
+import com.admin.ligiopen.ui.screens.news.newsManagement.NewsItemAdditionViewModel
 import com.admin.ligiopen.ui.screens.start.SplashViewModel
 
 object AppViewModelFactory {
@@ -94,6 +96,21 @@ object AppViewModelFactory {
 
         initializer {
             NewsDetailsViewModel(
+                apiRepository = ligiopenApplication().container.apiRepository,
+                dbRepository = ligiopenApplication().container.dbRepository,
+                savedStateHandle = this.createSavedStateHandle()
+            )
+        }
+
+        initializer {
+            NewsAdditionViewModel(
+                apiRepository = ligiopenApplication().container.apiRepository,
+                dbRepository = ligiopenApplication().container.dbRepository
+            )
+        }
+
+        initializer {
+            NewsItemAdditionViewModel(
                 apiRepository = ligiopenApplication().container.apiRepository,
                 dbRepository = ligiopenApplication().container.dbRepository,
                 savedStateHandle = this.createSavedStateHandle()

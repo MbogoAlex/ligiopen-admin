@@ -17,7 +17,10 @@ import com.admin.ligiopen.data.network.models.match.location.LocationCreationReq
 import com.admin.ligiopen.data.network.models.match.location.LocationUpdateRequest
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationResponseBody
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationsResponseBody
+import com.admin.ligiopen.data.network.models.news.NewsAdditionRequestBody
+import com.admin.ligiopen.data.network.models.news.NewsItemAdditionRequestBody
 import com.admin.ligiopen.data.network.models.news.NewsResponseBody
+import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import okhttp3.MultipartBody
@@ -155,5 +158,19 @@ interface ApiRepository {
         token: String,
         newsId: Int,
     ): Response<SingleNewsResponseBody>
+
+    //    Publish news
+    suspend fun publishNews(
+        token: String,
+        newsAdditionRequestBody: NewsAdditionRequestBody,
+        coverPhoto: MultipartBody.Part
+    ): Response<SingleNewsResponseBody>
+
+    //    Publish news item
+    suspend fun publishNewsItem(
+        token: String,
+        newsItemAdditionRequestBody: NewsItemAdditionRequestBody,
+        photo: MultipartBody.Part,
+    ) : Response<SingleNewsItemResponseBody>
 
 }

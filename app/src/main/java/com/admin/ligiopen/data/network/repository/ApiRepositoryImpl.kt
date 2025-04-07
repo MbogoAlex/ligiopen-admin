@@ -17,7 +17,10 @@ import com.admin.ligiopen.data.network.models.match.location.LocationCreationReq
 import com.admin.ligiopen.data.network.models.match.location.LocationUpdateRequest
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationResponseBody
 import com.admin.ligiopen.data.network.models.match.location.MatchLocationsResponseBody
+import com.admin.ligiopen.data.network.models.news.NewsAdditionRequestBody
+import com.admin.ligiopen.data.network.models.news.NewsItemAdditionRequestBody
 import com.admin.ligiopen.data.network.models.news.NewsResponseBody
+import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import okhttp3.MultipartBody
@@ -201,5 +204,27 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.getSingleNews(
             token = "Bearer $token",
             newsId = newsId
+        )
+
+    override suspend fun publishNews(
+        token: String,
+        newsAdditionRequestBody: NewsAdditionRequestBody,
+        coverPhoto: MultipartBody.Part
+    ): Response<SingleNewsResponseBody> =
+        apiService.publishNews(
+            token = "Bearer $token",
+            newsAdditionRequestBody = newsAdditionRequestBody,
+            coverPhoto = coverPhoto
+        )
+
+    override suspend fun publishNewsItem(
+        token: String,
+        newsItemAdditionRequestBody: NewsItemAdditionRequestBody,
+        photo: MultipartBody.Part
+    ): Response<SingleNewsItemResponseBody> =
+        apiService.publishNewsItem(
+            token = "Bearer $token",
+            newsItemAdditionRequestBody = newsItemAdditionRequestBody,
+            photo = photo
         )
 }

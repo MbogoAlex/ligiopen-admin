@@ -75,7 +75,7 @@ class NewsViewModel(
         }
     }
 
-    private fun getInitialData() {
+    fun getInitialData() {
         viewModelScope.launch {
             while (uiState.value.userAccount.id == 0) {
                 delay(1000)

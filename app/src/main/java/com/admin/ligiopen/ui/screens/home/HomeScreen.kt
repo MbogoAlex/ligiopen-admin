@@ -47,6 +47,7 @@ fun HomeScreenComposable(
     navigateToClubAdditionScreen: () -> Unit,
     navigateToPostMatchScreen: (postMatchId: String, fixtureId: String, locationId: String) -> Unit,
     navigateToNewsDetailsScreen: (newsId: String) -> Unit,
+    navigateToNewsAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -95,7 +96,8 @@ fun HomeScreenComposable(
             navigateToLocationAdditionScreen = navigateToLocationAdditionScreen,
             navigateToClubAdditionScreen = navigateToClubAdditionScreen,
             navigateToPostMatchScreen = navigateToPostMatchScreen,
-            navigateToNewsDetailsScreen = navigateToNewsDetailsScreen
+            navigateToNewsDetailsScreen = navigateToNewsDetailsScreen,
+            navigateToNewsAdditionScreen = navigateToNewsAdditionScreen
         )
     }
 }
@@ -110,6 +112,7 @@ fun HomeScreen(
     navigateToClubAdditionScreen: () -> Unit,
     navigateToPostMatchScreen: (postMatchId: String, fixtureId: String, locationId: String) -> Unit,
     navigateToNewsDetailsScreen: (newsId: String) -> Unit,
+    navigateToNewsAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -156,6 +159,7 @@ fun HomeScreen(
             HomeTabs.NEWS -> {
                 NewsScreenComposable(
                     navigateToNewsDetailsScreen = navigateToNewsDetailsScreen,
+                    navigateToNewsAdditionScreen = navigateToNewsAdditionScreen,
                     modifier = Modifier
                         .weight(1f)
                 )
@@ -238,7 +242,8 @@ fun HomeScreenPreview() {
             navigateToClubAdditionScreen = {},
             navigateToLocationAdditionScreen = { /*TODO*/ },
             navigateToPostMatchScreen = {postMatchId, fixtureId, locationId ->  },
-            navigateToNewsDetailsScreen = {}
+            navigateToNewsDetailsScreen = {},
+            navigateToNewsAdditionScreen = {}
         )
     }
 }
