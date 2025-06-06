@@ -23,7 +23,17 @@ class NewsViewModel(
     private val _uiState = MutableStateFlow(NewsScreenUiData())
     val uiState: StateFlow<NewsScreenUiData> = _uiState.asStateFlow()
 
-    fun getNews() {
+    fun changeTab(tab: NewsStatus) {
+        _uiState.update {
+            it.copy(
+                currentTab = tab
+            )
+        }
+
+        getNews()
+    }
+
+    private fun getNews() {
         _uiState.update {
             it.copy(
                 loadingStatus = LoadingStatus.LOADING
@@ -32,7 +42,8 @@ class NewsViewModel(
         viewModelScope.launch {
             try {
                 val response = apiRepository.getAllNews(
-                    token = uiState.value.userAccount.token
+                    token = uiState.value.userAccount.token,
+                    status = uiState.value.currentTab.name
                 )
 
                 if(response.isSuccessful) {

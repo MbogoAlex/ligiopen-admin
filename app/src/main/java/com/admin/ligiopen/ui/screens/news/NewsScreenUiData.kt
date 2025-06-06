@@ -9,5 +9,6 @@ data class NewsScreenUiData(
     val news: List<NewsDto> = emptyList(),
     val loadingStatus: LoadingStatus = LoadingStatus.LOADING,
     val unauthorized: Boolean = false,
+    val currentTab: NewsStatus = NewsStatus.APPROVED,
     val userAccount: UserAccount = userAccountDt
 )

@@ -29,6 +29,8 @@ val singleNews = NewsDto(
     subTitle = "News Sub Title",
     neutral = false,
     newsItems = newsItems,
+    newsStatus = "APPROVED",
+    publishedAt = "2025-05-30T11:01:38.78474",
     clubs = mutableListOf(1, 2)
 )
 
@@ -40,6 +42,8 @@ val news = List(10) {
         subTitle = "News Sub Title",
         neutral = false,
         newsItems = newsItems,
+        newsStatus = "APPROVED",
+        publishedAt = "2025-05-30T11:01:38.78474",
         clubs = mutableListOf(1, 2)
     )
 }

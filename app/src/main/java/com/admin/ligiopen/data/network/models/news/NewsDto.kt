@@ -10,6 +10,8 @@ data class NewsDto(
     val title: String,
     val subTitle: String?,
     val neutral: Boolean,
+    val newsStatus: String,
+    val publishedAt: String,
     val newsItems: List<NewsItemDto>,
     val clubs: List<Int>
 )

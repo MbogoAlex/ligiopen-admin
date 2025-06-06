@@ -13,11 +13,12 @@ data class ClubData(
     val clubAbbreviation: String?,
     val description: String,
     val country: String,
-    val county: String,
-    val town: String,
+    val county: String?,
+    val town: String?,
     val startedOn: String,
     val createdAt: String,
     val archived: Boolean,
     val archivedAt: String?,
-    val players: List<PlayerData>
+    val players: List<PlayerData>,
+    val clubStatus: String,
 )

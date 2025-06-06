@@ -2,6 +2,8 @@ package com.admin.ligiopen.data.network.repository
 
 import com.admin.ligiopen.data.network.models.auth.UserLoginRequestBody
 import com.admin.ligiopen.data.network.models.auth.UserLoginResponseBody
+import com.admin.ligiopen.data.network.models.club.ChangeClubStatusRequestBody
+import com.admin.ligiopen.data.network.models.club.ChangeClubStatusResponseBody
 import com.admin.ligiopen.data.network.models.club.ClubAdditionRequest
 import com.admin.ligiopen.data.network.models.club.ClubResponseBody
 import com.admin.ligiopen.data.network.models.club.ClubsResponseBody
@@ -20,11 +22,15 @@ import com.admin.ligiopen.data.network.models.match.location.MatchLocationsRespo
 import com.admin.ligiopen.data.network.models.news.NewsAdditionRequestBody
 import com.admin.ligiopen.data.network.models.news.NewsItemAdditionRequestBody
 import com.admin.ligiopen.data.network.models.news.NewsResponseBody
+import com.admin.ligiopen.data.network.models.news.NewsStatusUpdateRequestBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.Header
+import retrofit2.http.Query
 
 interface ApiRepository {
 
@@ -124,7 +130,12 @@ interface ApiRepository {
 
     //    Get clubs
     suspend fun getClubs(
-        token: String
+        token: String,
+        clubName: String?,
+        divisionId: Int?,
+        userId: Int,
+        favorite: Boolean?,
+        status: String?
     ): Response<ClubsResponseBody>
 
     //    Get club
@@ -150,6 +161,7 @@ interface ApiRepository {
 
     suspend fun getAllNews(
         token: String,
+        status: String?
     ): Response<NewsResponseBody>
 
     //    Get single news
@@ -172,5 +184,17 @@ interface ApiRepository {
         newsItemAdditionRequestBody: NewsItemAdditionRequestBody,
         photo: MultipartBody.Part,
     ) : Response<SingleNewsItemResponseBody>
+
+//    Change club status
+    suspend fun changeClubStatus(
+        token: String,
+        changeClubStatusRequestBody: ChangeClubStatusRequestBody
+    ): Response<ChangeClubStatusResponseBody>
+
+//    Change news status
+    suspend fun changeNewsStatus(
+        token: String,
+        newsStatusUpdateRequestBody: NewsStatusUpdateRequestBody
+    ): Response<SingleNewsResponseBody>
 
 }

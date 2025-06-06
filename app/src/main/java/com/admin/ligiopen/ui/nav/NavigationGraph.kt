@@ -13,6 +13,8 @@ import com.admin.ligiopen.ui.screens.home.HomeScreenComposable
 import com.admin.ligiopen.ui.screens.home.HomeScreenDestination
 import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionScreenComposable
 import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionScreenDestination
+import com.admin.ligiopen.ui.screens.match.clubs.ClubDetailsScreenComposable
+import com.admin.ligiopen.ui.screens.match.clubs.ClubDetailsScreenDestination
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScreenComposable
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScreenDestination
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.commentary.EventUploadScreenComposable
@@ -93,6 +95,9 @@ fun NavigationGraph(
                 },
                 navigateToNewsAdditionScreen = {
                     navController.navigate(NewsAdditionScreenDestination.route)
+                },
+                navigateToClubDetailsScreen = {
+                    navController.navigate("${ClubDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -182,6 +187,21 @@ fun NavigationGraph(
             )
         ) {
             NewsItemAdditionScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        composable(
+            ClubDetailsScreenDestination.routeWithClubId,
+            arguments = listOf(
+                navArgument(ClubDetailsScreenDestination.clubId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            ClubDetailsScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }

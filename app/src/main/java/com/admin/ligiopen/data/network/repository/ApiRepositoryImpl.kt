@@ -2,6 +2,8 @@ package com.admin.ligiopen.data.network.repository
 
 import com.admin.ligiopen.data.network.models.auth.UserLoginRequestBody
 import com.admin.ligiopen.data.network.models.auth.UserLoginResponseBody
+import com.admin.ligiopen.data.network.models.club.ChangeClubStatusRequestBody
+import com.admin.ligiopen.data.network.models.club.ChangeClubStatusResponseBody
 import com.admin.ligiopen.data.network.models.club.ClubAdditionRequest
 import com.admin.ligiopen.data.network.models.club.ClubResponseBody
 import com.admin.ligiopen.data.network.models.club.ClubsResponseBody
@@ -20,6 +22,7 @@ import com.admin.ligiopen.data.network.models.match.location.MatchLocationsRespo
 import com.admin.ligiopen.data.network.models.news.NewsAdditionRequestBody
 import com.admin.ligiopen.data.network.models.news.NewsItemAdditionRequestBody
 import com.admin.ligiopen.data.network.models.news.NewsResponseBody
+import com.admin.ligiopen.data.network.models.news.NewsStatusUpdateRequestBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
@@ -164,9 +167,21 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             postMatchAnalysisId = postMatchAnalysisId
         )
 
-    override suspend fun getClubs(token: String): Response<ClubsResponseBody> =
+    override suspend fun getClubs(
+        token: String,
+        clubName: String?,
+        divisionId: Int?,
+        userId: Int,
+        favorite: Boolean?,
+        status: String?
+    ): Response<ClubsResponseBody> =
         apiService.getClubs(
-            token = "Bearer $token"
+            token = "Bearer $token",
+            clubName = clubName,
+            divisionId = divisionId,
+            userId = userId,
+            favorite = favorite,
+            status = status
         )
 
     override suspend fun getClub(token: String, clubId: Int): Response<ClubResponseBody> =
@@ -192,9 +207,13 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             playerId = playerId
         )
 
-    override suspend fun getAllNews(token: String): Response<NewsResponseBody> =
+    override suspend fun getAllNews(
+        token: String,
+        status: String?
+    ): Response<NewsResponseBody> =
         apiService.getAllNews(
-            token = "Bearer $token"
+            token = "Bearer $token",
+            status = status
         )
 
     override suspend fun getSingleNews(
@@ -226,5 +245,23 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             token = "Bearer $token",
             newsItemAdditionRequestBody = newsItemAdditionRequestBody,
             photo = photo
+        )
+
+    override suspend fun changeClubStatus(
+        token: String,
+        changeClubStatusRequestBody: ChangeClubStatusRequestBody
+    ): Response<ChangeClubStatusResponseBody> =
+        apiService.changeClubStatus(
+            token = "Bearer $token",
+            changeClubStatusRequestBody = changeClubStatusRequestBody
+        )
+
+    override suspend fun changeNewsStatus(
+        token: String,
+        newsStatusUpdateRequestBody: NewsStatusUpdateRequestBody
+    ): Response<SingleNewsResponseBody> =
+        apiService.changeNewsStatus(
+            token = "Bearer $token",
+            newsStatusUpdateRequestBody = newsStatusUpdateRequestBody
         )
 }

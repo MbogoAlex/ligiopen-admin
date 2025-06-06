@@ -9,5 +9,5 @@ import com.admin.ligiopen.data.room.models.UserAccount
 data class NewsDetailsScreenUiData(
     val userAccount: UserAccount = userAccountDt,
     val news: NewsDto = singleNews,
-    val loadingStatus: LoadingStatus = LoadingStatus.LOADING
+    val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
 )

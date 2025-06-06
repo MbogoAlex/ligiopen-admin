@@ -1,5 +1,6 @@
 package com.admin.ligiopen.ui.screens.match.clubs
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,19 +19,29 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,10 +65,14 @@ import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenHeight
 import com.admin.ligiopen.utils.screenWidth
 
+// Enum for club status
+
+
 @Composable
 fun ClubsScreenComposable(
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
     navigateToClubAdditionScreen: () -> Unit,
+    navigateToClubDetailsScreen: (clubId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -95,20 +110,51 @@ fun ClubsScreenComposable(
     ) {
         ClubsScreen(
             clubs = uiState.clubs,
+            changeTab = viewModel::changeTab,
             loadingStatus = uiState.loadingStatus,
+            navigateToClubDetailsScreen = navigateToClubDetailsScreen,
             navigateToClubAdditionScreen = navigateToClubAdditionScreen
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClubsScreen(
     clubs: List<ClubData>,
     loadingStatus: LoadingStatus,
+    changeTab: (tab: ClubStatus) -> Unit,
     navigateToClubAdditionScreen: () -> Unit,
+    navigateToClubDetailsScreen: (clubId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    var showFilterDialog by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedCounty by remember { mutableStateOf("Nairobi") }
+
+    val tabTitles = listOf("Approved", "Pending", "Rejected")
+    val clubStatuses = listOf(ClubStatus.PENDING, ClubStatus.APPROVED, ClubStatus.REJECTED)
+
+    LaunchedEffect(selectedTabIndex) {
+        val selectedTab = tabTitles[selectedTabIndex].uppercase()
+        changeTab(ClubStatus.valueOf(selectedTab.replace(" ", "_")))
+    }
+
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Clubs") },
+                actions = {
+                    IconButton(onClick = { showFilterDialog = true }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.filter),
+                            contentDescription = "Filter clubs"
+                        )
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = navigateToClubAdditionScreen) {
                 Icon(
@@ -117,12 +163,33 @@ fun ClubsScreen(
                 )
             }
         }
-    ) {
-        Box(
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .padding(it)
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Column(
+            // ScrollableTabRow for club statuses
+            ScrollableTabRow(
+                selectedTabIndex = selectedTabIndex,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                tabTitles.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = {
+                            Text(
+                                text = title,
+                                fontSize = screenFontSize(x = 14.0).sp
+                            )
+                        }
+                    )
+                }
+            }
+
+            // Content based on selected tab
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
@@ -130,6 +197,78 @@ fun ClubsScreen(
                         horizontal = screenWidth(x = 16.0)
                     )
             ) {
+                if(loadingStatus == LoadingStatus.LOADING) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    if(clubs.isEmpty()) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            Text(
+                                text = "No ${tabTitles[selectedTabIndex]} clubs"
+                            )
+                        }
+                    } else {
+                        LazyColumn {
+                            items(clubs) { club ->
+                                ClubCard(
+                                    club = club,
+                                    navigateToClubDetailsScreen = navigateToClubDetailsScreen
+                                )
+                                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    // Filter Dialog
+    if (showFilterDialog) {
+        FilterDialog(
+            searchQuery = searchQuery,
+            selectedCounty = selectedCounty,
+            onSearchQueryChange = { searchQuery = it },
+            onCountyChange = { selectedCounty = it },
+            onDismiss = { showFilterDialog = false },
+            onApply = { showFilterDialog = false }
+        )
+    }
+}
+
+@Composable
+fun FilterDialog(
+    searchQuery: String,
+    selectedCounty: String,
+    onSearchQueryChange: (String) -> Unit,
+    onCountyChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onApply: () -> Unit
+) {
+    var showCountyDropdown by remember { mutableStateOf(false) }
+    val counties = listOf("Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret") // Add more counties as needed
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Filter Clubs",
+                fontSize = screenFontSize(x = 18.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column {
+                // Search field
                 TextField(
                     label = {
                         Text(
@@ -147,63 +286,88 @@ fun ClubsScreen(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
-                    value = "",
-                    shape = RoundedCornerShape(
-                        screenWidth(x = 10.0)
-                    ),
-                    onValueChange = {},
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    value = searchQuery,
+                    shape = RoundedCornerShape(screenWidth(x = 10.0)),
+                    onValueChange = onSearchQueryChange,
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-                Column {
-                    Card(
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                    .padding(screenWidth(x = 8.0))
-                        ) {
-                            Text(text = "Nairobi")
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowDown,
-                                contentDescription = null
-                            )
-                        }
 
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+
+                // County selector
+                Text(
+                    text = "County",
+                    fontSize = screenFontSize(x = 14.0).sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                Card(
+                    onClick = { showCountyDropdown = !showCountyDropdown }
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(screenWidth(x = 12.0))
+                    ) {
+                        Text(
+                            text = selectedCounty,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = null
+                        )
                     }
                 }
-                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-                if(loadingStatus == LoadingStatus.LOADING) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    LazyColumn {
-                        items(clubs) { club ->
-                            ClubCard(club = club)
-                            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+
+                // Simple county selection (you might want to implement a proper dropdown)
+                if (showCountyDropdown) {
+                    Column {
+                        counties.forEach { county ->
+                            TextButton(
+                                onClick = {
+                                    onCountyChange(county)
+                                    showCountyDropdown = false
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = county,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
                         }
                     }
                 }
             }
+        },
+        confirmButton = {
+            TextButton(onClick = onApply) {
+                Text("Apply")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
         }
-    }
+    )
 }
 
 @Composable
 fun ClubCard(
     club: ClubData,
+    navigateToClubDetailsScreen: (clubId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .clickable {
+                navigateToClubDetailsScreen(club.clubId.toString())
+            }
     ) {
         AsyncImage(
             model = club.clubLogo!!.link,
@@ -225,14 +389,13 @@ fun ClubCard(
                 text = club.country,
                 fontSize = screenFontSize(x = 14.0).sp,
             )
-//            Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
             Text(
                 text = "${club.county}, ${club.town}",
                 fontSize = screenFontSize(x = 14.0).sp,
             )
         }
         Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = { navigateToClubDetailsScreen(club.clubId.toString()) }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null
@@ -247,7 +410,9 @@ fun ClubsScreenPreview() {
     LigiopenadminTheme {
         ClubsScreen(
             clubs = clubs,
+            changeTab = {},
             loadingStatus = LoadingStatus.INITIAL,
+            navigateToClubDetailsScreen = {},
             navigateToClubAdditionScreen = {}
         )
     }

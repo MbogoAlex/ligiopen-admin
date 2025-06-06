@@ -4,5 +4,6 @@ enum class HomeTabs {
     CLUBS,
     FIXTURES,
     VENUES,
-    NEWS
+    NEWS,
+    CONTENT_REVIEW
 }

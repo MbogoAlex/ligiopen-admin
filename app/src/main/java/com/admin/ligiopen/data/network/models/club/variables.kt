@@ -1,5 +1,6 @@
 package com.admin.ligiopen.data.network.models.club
 
+import com.admin.ligiopen.data.network.models.file.emptyFileData
 import com.admin.ligiopen.data.network.models.file.fileData
 import com.admin.ligiopen.data.network.models.player.players
 
@@ -17,7 +18,26 @@ val club = ClubData(
     createdAt = "2025-02-07T08:02:01.878284",
     archived = false,
     archivedAt = null,
-    players = players
+    players = players,
+    clubStatus = "APPROVED"
+)
+
+val emptyClub = ClubData(
+    clubId = 0,
+    clubLogo = emptyFileData,
+    clubMainPhoto = emptyFileData,
+    name = "",
+    clubAbbreviation = "",
+    description = "",
+    country = "",
+    county = "",
+    town = "",
+    startedOn = "",
+    createdAt = "",
+    archived = false,
+    archivedAt = null,
+    players = emptyList(),
+    clubStatus = ""
 )
 
 val clubs = List(10) {index ->
@@ -35,6 +55,7 @@ val clubs = List(10) {index ->
         createdAt = "2025-02-07T08:02:01.878284",
         archived = false,
         archivedAt = null,
-        players = players
+        players = players,
+        clubStatus = "APPROVED"
     )
 }

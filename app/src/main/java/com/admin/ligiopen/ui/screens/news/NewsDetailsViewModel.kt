@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.admin.ligiopen.data.network.enums.LoadingStatus
+import com.admin.ligiopen.data.network.models.club.ChangeClubStatusRequestBody
+import com.admin.ligiopen.data.network.models.news.NewsStatusUpdateRequestBody
 import com.admin.ligiopen.data.network.repository.ApiRepository
 import com.admin.ligiopen.data.room.db.userAccountDt
 import com.admin.ligiopen.data.room.repository.DBRepository
@@ -27,12 +29,53 @@ class NewsDetailsViewModel(
 
     private val newsId: String? = savedStateHandle[NewsDetailsScreenDestination.newsId]
 
-    fun getNews() {
+    fun changeNewsStatus(status: String) {
         _uiState.update {
             it.copy(
                 loadingStatus = LoadingStatus.LOADING
             )
         }
+        viewModelScope.launch {
+            try {
+                val newsStatusUpdateRequestBody = NewsStatusUpdateRequestBody(
+                    newsId = newsId!!.toInt(),
+                    newsStatus = status
+                )
+
+                val response = apiRepository.changeNewsStatus(
+                    token = uiState.value.userAccount.token,
+                    newsStatusUpdateRequestBody = newsStatusUpdateRequestBody
+                )
+
+                if(response.isSuccessful) {
+                    getNews()
+                    _uiState.update {
+                        it.copy(
+                            loadingStatus = LoadingStatus.SUCCESS
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            loadingStatus = LoadingStatus.FAIL
+                        )
+                    }
+                    val errorString = response.errorBody()?.string()
+                    Log.e("changeNewsStatus: ", "RESPONSE: $errorString")
+                }
+
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        loadingStatus = LoadingStatus.FAIL
+                    )
+                }
+                Log.e("changeNewsStatus: ", "EXCEPTION: $e")
+            }
+        }
+    }
+
+    private fun getNews() {
         viewModelScope.launch {
             try {
                 val response = apiRepository.getSingleNews(
@@ -44,7 +87,6 @@ class NewsDetailsViewModel(
                     _uiState.update {
                         it.copy(
                             news = response.body()?.data!!,
-                            loadingStatus = LoadingStatus.SUCCESS
                         )
                     }
                 } else {

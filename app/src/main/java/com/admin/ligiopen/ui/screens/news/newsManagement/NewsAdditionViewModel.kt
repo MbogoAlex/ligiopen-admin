@@ -97,7 +97,12 @@ class NewsAdditionViewModel(
         viewModelScope.launch {
             try {
                 val response = apiRepository.getClubs(
-                    token = uiState.value.userAccount.token
+                    token = uiState.value.userAccount.token,
+                    clubName = null,
+                    divisionId = null,
+                    userId = uiState.value.userAccount.id,
+                    favorite = null,
+                    status = null
                 )
 
                 if(response.isSuccessful) {

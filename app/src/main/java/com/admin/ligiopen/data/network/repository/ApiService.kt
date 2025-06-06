@@ -2,6 +2,8 @@ package com.admin.ligiopen.data.network.repository
 
 import com.admin.ligiopen.data.network.models.auth.UserLoginRequestBody
 import com.admin.ligiopen.data.network.models.auth.UserLoginResponseBody
+import com.admin.ligiopen.data.network.models.club.ChangeClubStatusRequestBody
+import com.admin.ligiopen.data.network.models.club.ChangeClubStatusResponseBody
 import com.admin.ligiopen.data.network.models.club.ClubAdditionRequest
 import com.admin.ligiopen.data.network.models.club.ClubResponseBody
 import com.admin.ligiopen.data.network.models.club.ClubsResponseBody
@@ -20,6 +22,7 @@ import com.admin.ligiopen.data.network.models.match.location.MatchLocationsRespo
 import com.admin.ligiopen.data.network.models.news.NewsAdditionRequestBody
 import com.admin.ligiopen.data.network.models.news.NewsItemAdditionRequestBody
 import com.admin.ligiopen.data.network.models.news.NewsResponseBody
+import com.admin.ligiopen.data.network.models.news.NewsStatusUpdateRequestBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
@@ -158,7 +161,12 @@ interface ApiService {
 //    Get clubs
     @GET("club")
     suspend fun getClubs(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Query("clubName") clubName: String?,
+        @Query("divisionId") divisionId: Int?,
+        @Query("userId") userId: Int,
+        @Query("favorite") favorite: Boolean?,
+        @Query("status") status: String?
     ): Response<ClubsResponseBody>
 
 //    Get club
@@ -188,6 +196,7 @@ interface ApiService {
     @GET("news/all")
     suspend fun getAllNews(
         @Header("Authorization") token: String,
+        @Query("status") status: String?
     ): Response<NewsResponseBody>
 
 //    Get single news
@@ -214,5 +223,18 @@ interface ApiService {
     @Part("data") newsItemAdditionRequestBody: NewsItemAdditionRequestBody,
     @Part photo: MultipartBody.Part,
     ) : Response<SingleNewsItemResponseBody>
+
+    @PUT("club/status-update")
+    suspend fun changeClubStatus(
+        @Header("Authorization") token: String,
+        @Body changeClubStatusRequestBody: ChangeClubStatusRequestBody
+    ): Response<ChangeClubStatusResponseBody>
+
+//    Change news status
+    @PUT("news/status-update")
+    suspend fun changeNewsStatus(
+        @Header("Authorization") token: String,
+        @Body newsStatusUpdateRequestBody: NewsStatusUpdateRequestBody
+    ): Response<SingleNewsResponseBody>
 
 }
