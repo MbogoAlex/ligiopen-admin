@@ -67,6 +67,8 @@ import com.admin.ligiopen.data.network.enums.LoadingStatus
 import com.admin.ligiopen.ui.nav.AppNavigation
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
 import com.admin.ligiopen.utils.TextFieldComposable
+import com.admin.ligiopen.utils.composables.DatePicker
+import com.admin.ligiopen.utils.composables.dateFormatter
 import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenHeight
 import com.admin.ligiopen.utils.screenWidth
@@ -200,8 +202,6 @@ fun ClubAdditionScreen(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-
-    val dateFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy")
 
     Column(
         modifier = Modifier
@@ -467,51 +467,6 @@ fun ClubLogoUpload(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun DatePicker(
-    date: LocalDate,
-    onChangeDate: (date: LocalDate) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-
-    val defaultEndLocalDate = LocalDate.now()
-    val defaultEndMillis = defaultEndLocalDate?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun showDatePicker(isStart: Boolean) {
-        val initialDate = LocalDate.now()
-        val datePicker = DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
-                if(selectedDate.isAfter(LocalDate.now())) {
-                    Toast.makeText(context, "Invalid date", Toast.LENGTH_SHORT).show()
-                } else {
-                    onChangeDate(selectedDate)
-                }
-            },
-
-            initialDate.year,
-            initialDate.monthValue - 1,
-            initialDate.dayOfMonth
-        )
-
-        defaultEndMillis?.let { datePicker.datePicker.maxDate = it }
-
-        datePicker.show()
-    }
-
-    IconButton(onClick = { showDatePicker(true) }) {
-        Icon(
-            painter = painterResource(id = R.drawable.calendar),
-            contentDescription = null,
-            modifier = Modifier
-                .size(screenWidth(x = 24.0))
-        )
-    }
-}
 
 @Composable
 fun ClubAdditionSuccessDialog(

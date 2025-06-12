@@ -6,6 +6,7 @@ import com.admin.ligiopen.data.network.models.club.ChangeClubStatusRequestBody
 import com.admin.ligiopen.data.network.models.club.ChangeClubStatusResponseBody
 import com.admin.ligiopen.data.network.models.club.ClubAdditionRequest
 import com.admin.ligiopen.data.network.models.club.ClubResponseBody
+import com.admin.ligiopen.data.network.models.club.ClubUpdateRequest
 import com.admin.ligiopen.data.network.models.club.ClubsResponseBody
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryCreationRequest
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryUpdateRequest
@@ -27,6 +28,7 @@ import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import okhttp3.MultipartBody
+import okhttp3.Request
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -236,5 +238,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body newsStatusUpdateRequestBody: NewsStatusUpdateRequestBody
     ): Response<SingleNewsResponseBody>
+
+    @PUT("club/details")
+    suspend fun updateClubDetails(
+        @Header("Authorization") token: String,
+        @Body clubUpdateRequest: ClubUpdateRequest
+    ): Response<ClubResponseBody>
 
 }

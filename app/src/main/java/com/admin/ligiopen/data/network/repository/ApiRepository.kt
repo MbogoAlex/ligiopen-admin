@@ -6,6 +6,7 @@ import com.admin.ligiopen.data.network.models.club.ChangeClubStatusRequestBody
 import com.admin.ligiopen.data.network.models.club.ChangeClubStatusResponseBody
 import com.admin.ligiopen.data.network.models.club.ClubAdditionRequest
 import com.admin.ligiopen.data.network.models.club.ClubResponseBody
+import com.admin.ligiopen.data.network.models.club.ClubUpdateRequest
 import com.admin.ligiopen.data.network.models.club.ClubsResponseBody
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryCreationRequest
 import com.admin.ligiopen.data.network.models.match.commentary.CommentaryUpdateRequest
@@ -196,5 +197,10 @@ interface ApiRepository {
         token: String,
         newsStatusUpdateRequestBody: NewsStatusUpdateRequestBody
     ): Response<SingleNewsResponseBody>
+
+    suspend fun updateClubDetails(
+        token: String,
+        clubUpdateRequest: ClubUpdateRequest
+    ): Response<ClubResponseBody>
 
 }

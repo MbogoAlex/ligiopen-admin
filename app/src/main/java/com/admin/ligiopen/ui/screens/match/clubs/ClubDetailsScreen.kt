@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,7 +29,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +40,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -45,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -55,6 +60,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -62,6 +68,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.admin.ligiopen.AppViewModelFactory
@@ -88,6 +95,7 @@ object ClubDetailsScreenDestination : AppNavigation {
 
 @Composable
 fun ClubDetailsScreenComposable(
+    navigateToClubUpdateScreen: (clubId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -95,6 +103,21 @@ fun ClubDetailsScreenComposable(
 
     val viewModel: ClubDetailsViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    LaunchedEffect(lifecycleState) {
+        when(lifecycleState) {
+            Lifecycle.State.DESTROYED -> {}
+            Lifecycle.State.INITIALIZED -> {}
+            Lifecycle.State.CREATED -> {}
+            Lifecycle.State.STARTED -> {}
+            Lifecycle.State.RESUMED -> {
+                viewModel.getInitialData()
+            }
+        }
+    }
 
     if (uiState.loadingStatus == LoadingStatus.SUCCESS) {
         Toast.makeText(context, "Status changed", Toast.LENGTH_SHORT).show()
@@ -106,6 +129,7 @@ fun ClubDetailsScreenComposable(
         loadingStatus = uiState.loadingStatus,
         onNavigateBack = navigateToPreviousScreen,
         onStatusChange = viewModel::changeClubStatus,
+        navigateToClubUpdateScreen = navigateToClubUpdateScreen,
         modifier = modifier
     )
 }
@@ -117,6 +141,7 @@ fun ClubDetailsScreen(
     loadingStatus: LoadingStatus,
     onNavigateBack: () -> Unit = {},
     onStatusChange: (String) -> Unit = {},
+    navigateToClubUpdateScreen: (clubId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -156,49 +181,89 @@ fun ClubDetailsScreen(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = screenWidth(16.0)),
-                verticalArrangement = Arrangement.spacedBy(screenHeight(24.0))
-            ) {
-                item { Spacer(modifier = Modifier.height(screenHeight(8.0))) }
+            Column {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = screenWidth(16.0))
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(screenHeight(24.0))
+                ) {
+                    item { Spacer(modifier = Modifier.height(screenHeight(8.0))) }
 
-                // Club Header Section
-                item {
-                    ClubHeaderSection(clubData = clubData)
-                }
-
-                // Status Management Section
-                item {
-                    StatusManagementSection(
-                        currentStatus = clubData.clubStatus,
-                        loadingStatus = loadingStatus,
-                        onStatusChange = { newStatus ->
-                            onStatusChange(newStatus)
-                        }
-                    )
-                }
-
-                // Club Information Section
-                item {
-                    ClubInformationSection(clubData = clubData)
-                }
-
-                // Players Section
-                item {
-                    PlayersSection(players = clubData.players)
-                }
-
-                // Club Photos Section
-                if (clubData.clubMainPhoto != null) {
+                    // Club Header Section
                     item {
-                        ClubPhotosSection(clubData = clubData)
+                        ClubHeaderSection(clubData = clubData)
                     }
-                }
 
-                item { Spacer(modifier = Modifier.height(screenHeight(32.0))) }
+                    // Status Management Section
+                    item {
+                        StatusManagementSection(
+                            currentStatus = clubData.clubStatus,
+                            loadingStatus = loadingStatus,
+                            onStatusChange = { newStatus ->
+                                onStatusChange(newStatus)
+                            }
+                        )
+                    }
+
+                    // Club Information Section
+                    item {
+                        ClubInformationSection(clubData = clubData)
+                    }
+
+                    // Players Section
+                    item {
+                        PlayersSection(players = clubData.players)
+                    }
+
+                    // Club Photos Section
+                    if (clubData.clubMainPhoto != null) {
+                        item {
+                            ClubPhotosSection(clubData = clubData)
+                        }
+                    }
+
+                    item { Spacer(modifier = Modifier.height(screenHeight(32.0))) }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = screenWidth(16.0),
+                            vertical = screenHeight(8.0)
+                        )
+                ) {
+                    Button(
+                        onClick = {
+                            navigateToClubUpdateScreen(clubData.clubId.toString())
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        Text(
+                            text = "Edit club details"
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(screenWidth(4.0)))
+                    IconButton(
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        ),
+                        onClick = {},
+//                        modifier = Modifier
+//                            .weight(1f)
+                    ) {
+                        Icon(
+                            tint = MaterialTheme.colorScheme.onError,
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete club"
+                        )
+                    }
+
+                }
             }
+
         }
     }
 }
@@ -240,6 +305,24 @@ fun ClubHeaderSection(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
+            }
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(
+                        x = screenWidth((-20.0)),
+                        y = screenHeight(20.0)
+                    )
+            ) {
+                IconButton(
+                    onClick = {}
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.edit),
+                        contentDescription = "Edit logo"
+                    )
+                }
             }
         }
 
@@ -330,216 +413,155 @@ fun StatusManagementSection(
         Column(
             modifier = Modifier.padding(screenWidth(20.0))
         ) {
-            Text(
-                text = "Club Status",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(screenHeight(12.0)))
-
-            // Current Status Display
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = screenHeight(16.0))
-            ) {
+            Column {
                 Text(
-                    text = "Current:",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = "Club Status",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.width(screenWidth(8.0)))
-                StatusChip(status = currentStatus)
-            }
+                Spacer(modifier = Modifier.height(screenHeight(12.0)))
 
-            Divider(
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
-                modifier = Modifier.padding(bottom = screenHeight(16.0))
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = "Change Status",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = screenHeight(12.0))
-                )
-                Spacer(modifier = Modifier.width(screenWidth(4.0)))
-                if (loadingStatus == LoadingStatus.LOADING) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(screenWidth(20.0)),
-                        strokeWidth = screenWidth(2.0),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-            }
-
-            // Segmented Radio Button Control
-            Surface(
-                shape = RoundedCornerShape(screenWidth(8.0)),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        width = screenWidth(1.0),
-                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
-                        shape = RoundedCornerShape(screenWidth(8.0))
-                    )
-            ) {
+                // Current Status Display
                 Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    statusOptions.forEach { status ->
-                        val isSelected = currentStatus == status
-                        val backgroundColor = if (isSelected) {
-                            when (status) {
-                                "APPROVED" -> MaterialTheme.colorScheme.tertiaryContainer
-                                "REJECTED" -> MaterialTheme.colorScheme.errorContainer
-                                else -> MaterialTheme.colorScheme.primaryContainer
-                            }
-                        } else {
-                            Color.Transparent
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(screenHeight(48.0))
-                                .background(
-                                    color = backgroundColor,
-                                    shape = when (status) {
-                                        statusOptions.first() -> RoundedCornerShape(
-                                            topStart = screenHeight(8.0),
-                                            bottomStart = screenHeight(8.0)
-                                        )
-
-                                        statusOptions.last() -> RoundedCornerShape(
-                                            topEnd = screenHeight(8.0),
-                                            bottomEnd = screenHeight(8.0)
-                                        )
-
-                                        else -> RoundedCornerShape(0.dp)
-                                    }
-                                )
-                                .clickable { onStatusChange(status) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier
-                                    .padding(horizontal = screenWidth(12.0))
-                                    .horizontalScroll(rememberScrollState())
-                            ) {
-                                Icon(
-                                    painter = painterResource(
-                                        id = when (status) {
-                                            "PENDING" -> R.drawable.clock
-                                            "APPROVED" -> R.drawable.check_mark
-                                            else -> R.drawable.close
-                                        }
-                                    ),
-                                    contentDescription = null,
-                                    tint = if (isSelected) {
-                                        when (status) {
-                                            "APPROVED" -> MaterialTheme.colorScheme.onTertiaryContainer
-                                            "REJECTED" -> MaterialTheme.colorScheme.onErrorContainer
-                                            else -> MaterialTheme.colorScheme.onPrimaryContainer
-                                        }
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    },
-                                    modifier = Modifier.size(screenWidth(20.0))
-                                )
-                                Spacer(modifier = Modifier.width(screenWidth(8.0)))
-                                Text(
-                                    text = status,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = if (isSelected) {
-                                        when (status) {
-                                            "APPROVED" -> MaterialTheme.colorScheme.onTertiaryContainer
-                                            "REJECTED" -> MaterialTheme.colorScheme.onErrorContainer
-                                            else -> MaterialTheme.colorScheme.onPrimaryContainer
-                                        }
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    },
-                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Or as an alternative - Dropdown Menu version:
-            /*
-            var expanded by remember { mutableStateOf(false) }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentSize(Alignment.TopStart)
-            ) {
-                OutlinedButton(
-                    onClick = { expanded = true },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    )
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = screenHeight(16.0))
                 ) {
                     Text(
-                        text = currentStatus.replaceFirstChar { it.uppercase() },
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.Start
+                        text = "Current:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Icon(
-                        imageVector = if (expanded) Icons.Filled.ArrowDropUp
-                                    else Icons.Filled.ArrowDropDown,
-                        contentDescription = null
-                    )
+                    Spacer(modifier = Modifier.width(screenWidth(8.0)))
+                    StatusChip(status = currentStatus)
                 }
 
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier.fillMaxWidth()
+                Divider(
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                    modifier = Modifier.padding(bottom = screenHeight(16.0))
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    statusOptions.forEach { status ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = status,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            },
-                            onClick = {
-                                onStatusChange(status)
-                                expanded = false
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = when (status) {
-                                            "PENDING" -> R.drawable.ic_pending
-                                            "APPROVED" -> R.drawable.ic_approved
-                                            else -> R.drawable.ic_rejected
-                                        }
-                                    ),
-                                    contentDescription = null
-                                )
-                            }
+                    Text(
+                        text = "Change Status",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = screenHeight(12.0))
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(4.0)))
+                    if (loadingStatus == LoadingStatus.LOADING) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(screenWidth(20.0)),
+                            strokeWidth = screenWidth(2.0),
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
+
                 }
+
+                // Segmented Radio Button Control
+                Surface(
+                    shape = RoundedCornerShape(screenWidth(8.0)),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = screenWidth(1.0),
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(screenWidth(8.0))
+                        )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        statusOptions.forEach { status ->
+                            val isSelected = currentStatus == status
+                            val backgroundColor = if (isSelected) {
+                                when (status) {
+                                    "APPROVED" -> MaterialTheme.colorScheme.tertiaryContainer
+                                    "REJECTED" -> MaterialTheme.colorScheme.errorContainer
+                                    else -> MaterialTheme.colorScheme.primaryContainer
+                                }
+                            } else {
+                                Color.Transparent
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(screenHeight(48.0))
+                                    .background(
+                                        color = backgroundColor,
+                                        shape = when (status) {
+                                            statusOptions.first() -> RoundedCornerShape(
+                                                topStart = screenHeight(8.0),
+                                                bottomStart = screenHeight(8.0)
+                                            )
+
+                                            statusOptions.last() -> RoundedCornerShape(
+                                                topEnd = screenHeight(8.0),
+                                                bottomEnd = screenHeight(8.0)
+                                            )
+
+                                            else -> RoundedCornerShape(0.dp)
+                                        }
+                                    )
+                                    .clickable { onStatusChange(status) },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier
+                                        .padding(horizontal = screenWidth(12.0))
+                                        .horizontalScroll(rememberScrollState())
+                                ) {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = when (status) {
+                                                "PENDING" -> R.drawable.clock
+                                                "APPROVED" -> R.drawable.check_mark
+                                                else -> R.drawable.close
+                                            }
+                                        ),
+                                        contentDescription = null,
+                                        tint = if (isSelected) {
+                                            when (status) {
+                                                "APPROVED" -> MaterialTheme.colorScheme.onTertiaryContainer
+                                                "REJECTED" -> MaterialTheme.colorScheme.onErrorContainer
+                                                else -> MaterialTheme.colorScheme.onPrimaryContainer
+                                            }
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                        },
+                                        modifier = Modifier.size(screenWidth(20.0))
+                                    )
+                                    Spacer(modifier = Modifier.width(screenWidth(8.0)))
+                                    Text(
+                                        text = status,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = if (isSelected) {
+                                            when (status) {
+                                                "APPROVED" -> MaterialTheme.colorScheme.onTertiaryContainer
+                                                "REJECTED" -> MaterialTheme.colorScheme.onErrorContainer
+                                                else -> MaterialTheme.colorScheme.onPrimaryContainer
+                                            }
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                        },
+                                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
-            */
         }
     }
 }
@@ -1034,7 +1056,8 @@ fun ClubDetailsScreenPreview() {
     LigiopenadminTheme {
         ClubDetailsScreen(
             loadingStatus = LoadingStatus.INITIAL,
-            clubData = club
+            clubData = club,
+            navigateToClubUpdateScreen = {}
         )
     }
 }

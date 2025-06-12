@@ -7,9 +7,9 @@ import kotlinx.serialization.Serializable
 data class MatchLocationData(
     val locationId: Int,
     val venueName: String,
-    val country: String,
-    val county: String,
-    val town: String,
+    val country: String?,
+    val county: String?,
+    val town: String?,
     val photos: List<FileData>?,
-    val matchFixturesIds: List<Int>?
+//    val matchFixturesIds: List<Int>?
 )

@@ -1,5 +1,7 @@
 package com.admin.ligiopen.ui.nav
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -15,6 +17,8 @@ import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionScreenComposable
 import com.admin.ligiopen.ui.screens.match.clubs.ClubAdditionScreenDestination
 import com.admin.ligiopen.ui.screens.match.clubs.ClubDetailsScreenComposable
 import com.admin.ligiopen.ui.screens.match.clubs.ClubDetailsScreenDestination
+import com.admin.ligiopen.ui.screens.match.clubs.ClubUpdateScreenComposable
+import com.admin.ligiopen.ui.screens.match.clubs.ClubUpdateScreenDestination
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScreenComposable
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.HighlightsScreenDestination
 import com.admin.ligiopen.ui.screens.match.fixtures.fixtureDetails.commentary.EventUploadScreenComposable
@@ -30,6 +34,7 @@ import com.admin.ligiopen.ui.screens.news.newsManagement.NewsItemAdditionScreenD
 import com.admin.ligiopen.ui.screens.start.SplashScreenComposable
 import com.admin.ligiopen.ui.screens.start.SplashScreenDestination
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
@@ -202,6 +207,24 @@ fun NavigationGraph(
             )
         ) {
             ClubDetailsScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                },
+                navigateToClubUpdateScreen = {
+                    navController.navigate("${ClubUpdateScreenDestination.route}/${it}")
+                }
+            )
+        }
+
+        composable(
+            ClubUpdateScreenDestination.routeWithClubId,
+            arguments = listOf(
+                navArgument(ClubUpdateScreenDestination.clubId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            ClubUpdateScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }

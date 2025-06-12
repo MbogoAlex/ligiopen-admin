@@ -9,7 +9,17 @@ val matchLocation = MatchLocationData(
     county = "Nakuru",
     town = "Nakuru",
     photos = fileDts,
-    matchFixturesIds = listOf(1, 2)
+//    matchFixturesIds = listOf(1, 2)
+)
+
+val emptyLocation = MatchLocationData(
+    locationId = 1,
+    venueName = "",
+    country = "",
+    county = "",
+    town = "",
+    photos = emptyList(),
+//    matchFixturesIds = emptyList()
 )
 
 val matchLocations = List(10) {
@@ -20,6 +30,6 @@ val matchLocations = List(10) {
         county = "Nakuru",
         town = "Nakuru",
         photos = fileDts,
-        matchFixturesIds = listOf(1, 2)
+//        matchFixturesIds = listOf(1, 2)
     )
 }
