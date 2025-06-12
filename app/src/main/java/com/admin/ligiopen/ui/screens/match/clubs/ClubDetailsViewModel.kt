@@ -1,5 +1,7 @@
 package com.admin.ligiopen.ui.screens.match.clubs
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -9,6 +11,7 @@ import com.admin.ligiopen.data.network.models.club.ChangeClubStatusRequestBody
 import com.admin.ligiopen.data.network.repository.ApiRepository
 import com.admin.ligiopen.data.room.db.userAccountDt
 import com.admin.ligiopen.data.room.repository.DBRepository
+import com.admin.ligiopen.utils.uriToMultipart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +30,22 @@ class ClubDetailsViewModel(
     val uiState: StateFlow<ClubDetailsUiData> = _uiState.asStateFlow()
 
     private val clubId: String? = savedStateHandle[ClubDetailsScreenDestination.clubId]
+
+    fun uploadLogo(logo: Uri) {
+        _uiState.update {
+            it.copy(
+                newLogo = logo
+            )
+        }
+    }
+
+    fun removeLogo() {
+        _uiState.update {
+            it.copy(
+                newLogo = null
+            )
+        }
+    }
 
     private fun getClub() {
         viewModelScope.launch {
@@ -48,6 +67,56 @@ class ClubDetailsViewModel(
                }
             } catch (e: Exception) {
                 Log.e("getClub", "Exception: $e")
+            }
+        }
+    }
+
+    fun setClubLogo(context: Context) {
+        _uiState.update {
+            it.copy(
+                loadingStatus = LoadingStatus.LOADING
+            )
+        }
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    val logoPart = uriToMultipart(uiState.value.newLogo!!, context)
+                    val response = apiRepository.changeClubLogo(
+                        token = uiState.value.userAccount.token,
+                        clubId = clubId!!.toInt(),
+                        clubLogo = logoPart
+                    )
+
+                    if(response.isSuccessful) {
+                        getClub()
+                        _uiState.update {
+                            it.copy(
+                                loadingStatus = LoadingStatus.SUCCESS
+                            )
+                        }
+                        Log.d("setClubPhoto", "SUCCESS")
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                loadingStatus = LoadingStatus.FAIL
+                            )
+                        }
+
+                        Log.e("setClubPhoto", "ResponseErr: $response")
+
+                    }
+
+                } catch (e: Exception) {
+
+                    _uiState.update {
+                        it.copy(
+                            loadingStatus = LoadingStatus.FAIL
+                        )
+                    }
+
+                    Log.e("setClubPhoto", "Exception: $e")
+
+                }
             }
         }
     }

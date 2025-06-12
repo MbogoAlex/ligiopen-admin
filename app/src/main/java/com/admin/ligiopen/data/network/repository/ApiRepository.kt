@@ -31,6 +31,10 @@ import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
+import retrofit2.http.Multipart
+import retrofit2.http.PUT
+import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiRepository {
@@ -150,6 +154,13 @@ interface ApiRepository {
         token: String,
         clubAdditionRequest: ClubAdditionRequest,
         logo: MultipartBody.Part
+    ): Response<ClubResponseBody>
+
+    //    Update club logo
+    suspend fun changeClubLogo(
+        token: String,
+        clubId: Int,
+        clubLogo: MultipartBody.Part
     ): Response<ClubResponseBody>
 
     //    Get player

@@ -202,6 +202,17 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             logo = logo
         )
 
+    override suspend fun changeClubLogo(
+        token: String,
+        clubId: Int,
+        clubLogo: MultipartBody.Part
+    ): Response<ClubResponseBody> =
+        apiService.changeClubLogo(
+            token = "Bearer $token",
+            clubId = clubId,
+            clubLogo = clubLogo
+        )
+
     override suspend fun getPlayer(token: String, playerId: Int): Response<PlayerResponseBody> =
         apiService.getPlayer(
             token = "Bearer $token",

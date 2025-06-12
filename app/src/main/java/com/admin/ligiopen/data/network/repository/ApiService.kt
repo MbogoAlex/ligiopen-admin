@@ -187,6 +187,15 @@ interface ApiService {
         @Part logo: MultipartBody.Part
     ): Response<ClubResponseBody>
 
+//    Update club logo
+    @Multipart
+    @PUT("club/logo/{clubId}")
+    suspend fun changeClubLogo(
+        @Header("Authorization") token: String,
+        @Path("clubId") clubId: Int,
+        @Part clubLogo: MultipartBody.Part
+    ): Response<ClubResponseBody>
+
 //    Get player
     @GET("player/{playerId}")
     suspend fun getPlayer(

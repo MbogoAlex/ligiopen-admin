@@ -70,6 +70,7 @@ import com.admin.ligiopen.data.network.enums.LoadingStatus
 import com.admin.ligiopen.ui.nav.AppNavigation
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
 import com.admin.ligiopen.utils.TextFieldComposable
+import com.admin.ligiopen.utils.composables.PhotosSelection
 import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenHeight
 import com.admin.ligiopen.utils.screenWidth
@@ -372,111 +373,7 @@ fun LocationAdditionScreen(
     }
 }
 
-@Composable
-fun PhotosSelection(
-    onUploadPhoto: (image: Uri) -> Unit,
-    onRemovePhoto: (index: Int) -> Unit,
-    photos: List<Uri>,
-    modifier: Modifier = Modifier
-) {
-    val images = remember { mutableStateListOf<Uri>() }
 
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents(),
-        onResult = {uriList ->
-            if(uriList.isNotEmpty()) {
-                for(uri in uriList) {
-                    onUploadPhoto(uri)
-                }
-            }
-
-        }
-    )
-
-    Column {
-        Row(
-            modifier = Modifier
-                .horizontalScroll(rememberScrollState())
-        ) {
-            photos.forEachIndexed { index, uri ->
-                Row {
-                    Image(
-                        rememberImagePainter(data = uri),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .padding(
-                                top = screenHeight(x = 5.0),
-                                end = screenWidth(x = 3.0),
-                                bottom = screenHeight(x = 5.0)
-                            )
-                            .size(screenWidth(x = 100.0))
-                    )
-                    IconButton(onClick = {
-                        onRemovePhoto(index)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null
-                        )
-                    }
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(screenWidth(x = 20.0)))
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = Color.Transparent
-            ),
-            modifier = Modifier
-                .border(
-                    width = screenWidth(x = 1.0),
-                    color = Color.Gray,
-                    shape = RoundedCornerShape(screenWidth(x = 10.0))
-                )
-                .clickable {
-                    galleryLauncher.launch("image/*")
-                }
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(screenWidth(x = 20.0))
-
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.photo_upload),
-                        contentDescription = null
-                    )
-                    if(images.isEmpty()) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Click to upload images"
-                            )
-                            Spacer(modifier = Modifier.width(screenWidth(x = 3.0)))
-                            Text(
-                                text = "*",
-                                color = Color.Red
-                            )
-                        }
-                    } else {
-                        Text(
-                            text = "Click to upload images"
-                        )
-                    }
-
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun LocationAdditionSuccessDialog(

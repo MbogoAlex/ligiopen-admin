@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -46,12 +47,16 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -80,6 +85,8 @@ import com.admin.ligiopen.data.network.models.player.PlayerData
 import com.admin.ligiopen.data.network.models.player.PlayerPosition
 import com.admin.ligiopen.ui.nav.AppNavigation
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
+import com.admin.ligiopen.utils.composables.PhotoSelection
+import com.admin.ligiopen.utils.composables.PhotosSelection
 import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenHeight
 import com.admin.ligiopen.utils.screenWidth
@@ -104,6 +111,10 @@ fun ClubDetailsScreenComposable(
     val viewModel: ClubDetailsViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
+    var showLogoPicker by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
 
@@ -120,8 +131,72 @@ fun ClubDetailsScreenComposable(
     }
 
     if (uiState.loadingStatus == LoadingStatus.SUCCESS) {
-        Toast.makeText(context, "Status changed", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Club updated", Toast.LENGTH_SHORT).show()
+        showLogoPicker = false
         viewModel.resetStatus()
+    }
+
+    if(showLogoPicker) {
+        AlertDialog(
+            title = {
+                Text(
+                    text = "Change club logo",
+                    fontSize = screenFontSize(16.0).sp
+                )
+            },
+            text = {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    PhotoSelection(
+                        onUploadPhoto = viewModel::uploadLogo,
+                        onRemovePhoto = viewModel::removeLogo,
+                        photo = uiState.newLogo
+                    )
+                }
+            },
+            onDismissRequest = {
+                if(uiState.loadingStatus != LoadingStatus.LOADING) {
+                    showLogoPicker = !showLogoPicker
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    enabled = uiState.loadingStatus != LoadingStatus.LOADING,
+                    onClick = { showLogoPicker = !showLogoPicker }
+                ) {
+                    Text(
+                        text = "Cancel",
+                        fontSize = screenFontSize(14.0).sp
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    enabled = uiState.loadingStatus != LoadingStatus.LOADING && uiState.newLogo != null,
+                    onClick = {
+                        viewModel.setClubLogo(context)
+                    }
+                ) {
+
+                    if(uiState.loadingStatus == LoadingStatus.LOADING) {
+                        Text(
+                            text = "Loading...",
+                            fontSize = screenFontSize(14.0).sp
+                        )
+                    } else {
+                        Text(
+                            text = "Upload",
+                            fontSize = screenFontSize(14.0).sp
+                        )
+                    }
+
+
+                }
+            }
+        )
     }
 
     ClubDetailsScreen(
@@ -129,6 +204,9 @@ fun ClubDetailsScreenComposable(
         loadingStatus = uiState.loadingStatus,
         onNavigateBack = navigateToPreviousScreen,
         onStatusChange = viewModel::changeClubStatus,
+        onChangeLogo = {
+            showLogoPicker = true
+        },
         navigateToClubUpdateScreen = navigateToClubUpdateScreen,
         modifier = modifier
     )
@@ -141,6 +219,7 @@ fun ClubDetailsScreen(
     loadingStatus: LoadingStatus,
     onNavigateBack: () -> Unit = {},
     onStatusChange: (String) -> Unit = {},
+    onChangeLogo: () -> Unit,
     navigateToClubUpdateScreen: (clubId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -193,7 +272,10 @@ fun ClubDetailsScreen(
 
                     // Club Header Section
                     item {
-                        ClubHeaderSection(clubData = clubData)
+                        ClubHeaderSection(
+                            clubData = clubData,
+                            onChangeLogo = onChangeLogo
+                        )
                     }
 
                     // Status Management Section
@@ -272,6 +354,7 @@ fun ClubDetailsScreen(
 @Composable
 fun ClubHeaderSection(
     clubData: ClubData,
+    onChangeLogo: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -316,7 +399,7 @@ fun ClubHeaderSection(
                     )
             ) {
                 IconButton(
-                    onClick = {}
+                    onClick = onChangeLogo
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.edit),
@@ -1057,6 +1140,7 @@ fun ClubDetailsScreenPreview() {
         ClubDetailsScreen(
             loadingStatus = LoadingStatus.INITIAL,
             clubData = club,
+            onChangeLogo = {},
             navigateToClubUpdateScreen = {}
         )
     }
