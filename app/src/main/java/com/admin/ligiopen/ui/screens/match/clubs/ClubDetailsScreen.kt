@@ -59,10 +59,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -73,6 +75,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -103,6 +106,7 @@ object ClubDetailsScreenDestination : AppNavigation {
 @Composable
 fun ClubDetailsScreenComposable(
     navigateToClubUpdateScreen: (clubId: String) -> Unit,
+    navigateToPlayerDetailsScreen: (playerId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -112,6 +116,10 @@ fun ClubDetailsScreenComposable(
     val uiState by viewModel.uiState.collectAsState()
 
     var showLogoPicker by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var showPhotoPicker by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -199,6 +207,69 @@ fun ClubDetailsScreenComposable(
         )
     }
 
+    if(showPhotoPicker) {
+        AlertDialog(
+            title = {
+                Text(
+                    text = "Change club photo",
+                    fontSize = screenFontSize(16.0).sp
+                )
+            },
+            text = {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    PhotoSelection(
+                        onUploadPhoto = viewModel::uploadClubPhoto,
+                        onRemovePhoto = viewModel::removeClubPhoto,
+                        photo = uiState.newPhoto
+                    )
+                }
+            },
+            onDismissRequest = {
+                if(uiState.loadingStatus != LoadingStatus.LOADING) {
+                    showPhotoPicker = !showPhotoPicker
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    enabled = uiState.loadingStatus != LoadingStatus.LOADING,
+                    onClick = { showPhotoPicker = !showPhotoPicker }
+                ) {
+                    Text(
+                        text = "Cancel",
+                        fontSize = screenFontSize(14.0).sp
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    enabled = uiState.loadingStatus != LoadingStatus.LOADING && uiState.newPhoto != null,
+                    onClick = {
+                        viewModel.setClubPhoto(context)
+                    }
+                ) {
+
+                    if(uiState.loadingStatus == LoadingStatus.LOADING) {
+                        Text(
+                            text = "Loading...",
+                            fontSize = screenFontSize(14.0).sp
+                        )
+                    } else {
+                        Text(
+                            text = "Upload",
+                            fontSize = screenFontSize(14.0).sp
+                        )
+                    }
+
+
+                }
+            }
+        )
+    }
+
     ClubDetailsScreen(
         clubData = uiState.club,
         loadingStatus = uiState.loadingStatus,
@@ -207,7 +278,11 @@ fun ClubDetailsScreenComposable(
         onChangeLogo = {
             showLogoPicker = true
         },
+        onChangeClubPhoto = {
+            showPhotoPicker = true
+        },
         navigateToClubUpdateScreen = navigateToClubUpdateScreen,
+        navigateToPlayerDetailsScreen = navigateToPlayerDetailsScreen,
         modifier = modifier
     )
 }
@@ -220,7 +295,9 @@ fun ClubDetailsScreen(
     onNavigateBack: () -> Unit = {},
     onStatusChange: (String) -> Unit = {},
     onChangeLogo: () -> Unit,
+    onChangeClubPhoto: () -> Unit,
     navigateToClubUpdateScreen: (clubId: String) -> Unit,
+    navigateToPlayerDetailsScreen: (playerId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -274,7 +351,8 @@ fun ClubDetailsScreen(
                     item {
                         ClubHeaderSection(
                             clubData = clubData,
-                            onChangeLogo = onChangeLogo
+                            onChangeLogo = onChangeLogo,
+                            onChangeClubPhoto = onChangeClubPhoto
                         )
                     }
 
@@ -296,7 +374,10 @@ fun ClubDetailsScreen(
 
                     // Players Section
                     item {
-                        PlayersSection(players = clubData.players)
+                        PlayersSection(
+                            players = clubData.players,
+                            navigateToPlayerDetailsScreen = navigateToPlayerDetailsScreen
+                        )
                     }
 
                     // Club Photos Section
@@ -355,6 +436,7 @@ fun ClubDetailsScreen(
 fun ClubHeaderSection(
     clubData: ClubData,
     onChangeLogo: () -> Unit,
+    onChangeClubPhoto: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -399,11 +481,15 @@ fun ClubHeaderSection(
                     )
             ) {
                 IconButton(
-                    onClick = onChangeLogo
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    onClick = onChangeClubPhoto
                 ) {
                     Icon(
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         painter = painterResource(id = R.drawable.edit),
-                        contentDescription = "Edit logo"
+                        contentDescription = "Edit club photo"
                     )
                 }
             }
@@ -424,6 +510,7 @@ fun ClubHeaderSection(
                     .shadow(screenWidth(8.0), CircleShape)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surface)
+                    .graphicsLayer { clip = false }
                     .border(
                         width = screenWidth(2.0),
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
@@ -437,6 +524,32 @@ fun ClubHeaderSection(
                     modifier = Modifier.size(screenWidth(90.0)),
                     contentScale = ContentScale.Crop
                 )
+
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+//                        .alpha(0.7f)
+                        .offset(
+                            x = screenWidth(-10.0),
+                            y = screenHeight(-10.0)
+                        )
+//                        .background(MaterialTheme.colorScheme.primary)
+                        .zIndex(2f)
+                ) {
+                    IconButton(
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        onClick = onChangeLogo
+                    ) {
+                        Icon(
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            painter = painterResource(id = R.drawable.edit),
+                            contentDescription = "Edit logo"
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(screenHeight(16.0)))
@@ -795,6 +908,7 @@ fun ClubInformationSection(
 @Composable
 fun PlayersSection(
     players: List<PlayerData>,
+    navigateToPlayerDetailsScreen: (playerId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -900,17 +1014,32 @@ fun PlayersSection(
                     horizontalArrangement = Arrangement.spacedBy(screenWidth(16.0)),
                     contentPadding = PaddingValues(bottom = screenHeight(8.0))
                 ) {
-                    items(players.take(5)) { player ->
-                        PlayerCard(player = player)
+                    items(players) { player ->
+                        PlayerCard(
+                            player = player,
+                            navigateToPlayerDetailsScreen = navigateToPlayerDetailsScreen
+                        )
                     }
 
-                    if (players.size > 5) {
-                        item {
-                            PlayerMoreCard(count = players.size - 5)
-                        }
-                    }
+//                    if (players.size > 5) {
+//                        item {
+//                            PlayerMoreCard(count = players.size - 5)
+//                        }
+//                    }
                 }
             }
+            Spacer(modifier = Modifier.height(screenHeight(8.0)))
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Add player",
+                    fontSize = screenFontSize(14.0).sp
+                )
+            }
+            Spacer(modifier = Modifier.height(screenHeight(8.0)))
         }
     }
 }
@@ -918,12 +1047,16 @@ fun PlayersSection(
 @Composable
 fun PlayerCard(
     player: PlayerData,
+    navigateToPlayerDetailsScreen: (playerId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier
             .width(screenWidth(140.0))
-            .height(screenHeight(180.0)),
+            .height(screenHeight(180.0))
+            .clickable {
+                navigateToPlayerDetailsScreen(player.playerId.toString())
+            },
         shape = RoundedCornerShape(screenWidth(12.0)),
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = screenHeight(4.0)
@@ -1141,7 +1274,9 @@ fun ClubDetailsScreenPreview() {
             loadingStatus = LoadingStatus.INITIAL,
             clubData = club,
             onChangeLogo = {},
-            navigateToClubUpdateScreen = {}
+            onChangeClubPhoto = {},
+            navigateToClubUpdateScreen = {},
+            navigateToPlayerDetailsScreen = {}
         )
     }
 }

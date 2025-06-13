@@ -11,5 +11,6 @@ data class ClubDetailsUiData(
     val userAccount: UserAccount = userAccountDt,
     val club: ClubData = emptyClub,
     val newLogo: Uri? = null,
+    val newPhoto: Uri? = null,
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
 )

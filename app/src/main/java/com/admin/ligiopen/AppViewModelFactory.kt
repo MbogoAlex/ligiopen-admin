@@ -19,6 +19,7 @@ import com.admin.ligiopen.ui.screens.news.NewsDetailsViewModel
 import com.admin.ligiopen.ui.screens.news.NewsViewModel
 import com.admin.ligiopen.ui.screens.news.newsManagement.NewsAdditionViewModel
 import com.admin.ligiopen.ui.screens.news.newsManagement.NewsItemAdditionViewModel
+import com.admin.ligiopen.ui.screens.player.PlayerDetailsViewModel
 import com.admin.ligiopen.ui.screens.start.SplashViewModel
 
 object AppViewModelFactory {
@@ -129,6 +130,14 @@ object AppViewModelFactory {
 
         initializer {
             ClubUpdateViewModel(
+                apiRepository = ligiopenApplication().container.apiRepository,
+                dbRepository = ligiopenApplication().container.dbRepository,
+                savedStateHandle = this.createSavedStateHandle()
+            )
+        }
+
+        initializer {
+            PlayerDetailsViewModel(
                 apiRepository = ligiopenApplication().container.apiRepository,
                 dbRepository = ligiopenApplication().container.dbRepository,
                 savedStateHandle = this.createSavedStateHandle()

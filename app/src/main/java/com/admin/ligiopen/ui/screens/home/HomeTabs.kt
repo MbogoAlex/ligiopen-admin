@@ -5,5 +5,5 @@ enum class HomeTabs {
     FIXTURES,
     VENUES,
     NEWS,
-    CONTENT_REVIEW
+    USERS,
 }

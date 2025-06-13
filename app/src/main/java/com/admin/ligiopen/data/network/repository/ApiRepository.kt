@@ -27,6 +27,7 @@ import com.admin.ligiopen.data.network.models.news.NewsStatusUpdateRequestBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
+import com.admin.ligiopen.data.network.models.player.PlayerUpdateRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -163,10 +164,23 @@ interface ApiRepository {
         clubLogo: MultipartBody.Part
     ): Response<ClubResponseBody>
 
+    //    Update club photo
+    suspend fun changeClubPhoto(
+        token: String,
+        clubId: Int,
+        photo: MultipartBody.Part
+    ): Response<ClubResponseBody>
+
     //    Get player
     suspend fun getPlayer(
         token: String,
         playerId: Int,
+    ): Response<PlayerResponseBody>
+
+    //    Update player details
+    suspend fun updatePlayerDetails(
+        token: String,
+        playerUpdateRequest: PlayerUpdateRequest
     ): Response<PlayerResponseBody>
 
     //    Get all news

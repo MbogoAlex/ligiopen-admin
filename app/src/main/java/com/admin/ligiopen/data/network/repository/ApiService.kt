@@ -27,6 +27,7 @@ import com.admin.ligiopen.data.network.models.news.NewsStatusUpdateRequestBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
+import com.admin.ligiopen.data.network.models.player.PlayerUpdateRequest
 import okhttp3.MultipartBody
 import okhttp3.Request
 import retrofit2.Response
@@ -196,11 +197,27 @@ interface ApiService {
         @Part clubLogo: MultipartBody.Part
     ): Response<ClubResponseBody>
 
+//    Update club photo
+    @Multipart
+    @PUT("club/main-photo/{clubId}")
+    suspend fun changeClubPhoto(
+        @Header("Authorization") token: String,
+        @Path("clubId") clubId: Int,
+        @Part photo: MultipartBody.Part
+    ): Response<ClubResponseBody>
+
 //    Get player
     @GET("player/{playerId}")
     suspend fun getPlayer(
         @Header("Authorization") token: String,
         @Path("playerId") playerId: Int,
+    ): Response<PlayerResponseBody>
+
+//    Update player details
+    @PUT("player")
+    suspend fun updatePlayerDetails(
+        @Header("Authorization") token: String,
+        @Body playerUpdateRequest: PlayerUpdateRequest
     ): Response<PlayerResponseBody>
 
 //    Get all news

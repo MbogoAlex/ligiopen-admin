@@ -1,7 +1,9 @@
 package com.admin.ligiopen.ui.screens.home
 
 import android.app.Activity
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -60,6 +62,7 @@ object HomeScreenDestination: AppNavigation {
     override val route: String = "home-screen"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreenComposable(
     navigateToLoginScreenWithArgs: (email: String, password: String) -> Unit,
@@ -75,34 +78,75 @@ fun HomeScreenComposable(
 
     BackHandler(onBack = {(context as Activity).finish()})
 
-    val tabs = listOf(
-        HomeTab(
-            title = "Clubs",
-            icon = R.drawable.football_club,
-            tab = HomeTabs.CLUBS
-        ),
-        HomeTab(
-            title = "Fixtures",
-            icon = R.drawable.fixtures,
-            tab = HomeTabs.FIXTURES
-        ),
-        HomeTab(
-            title = "Venues",
-            icon = R.drawable.stadium,
-            tab = HomeTabs.VENUES
-        ),
-        HomeTab(
-            title = "News",
-            icon = R.drawable.news,
-            tab = HomeTabs.NEWS
-        ),
-        HomeTab(
-            title = "Content review",
-            icon = R.drawable.content_review,
-            tab = HomeTabs.CONTENT_REVIEW
-        ),
+    val role = UserRole.TEAM_ADMIN
 
-    )
+    val tabs = when(role) {
+        UserRole.SUPER_ADMIN -> {
+            listOf(
+                HomeTab(
+                    title = "Clubs",
+                    icon = R.drawable.football_club,
+                    tab = HomeTabs.CLUBS
+                ),
+                HomeTab(
+                    title = "Fixtures",
+                    icon = R.drawable.fixtures,
+                    tab = HomeTabs.FIXTURES
+                ),
+                HomeTab(
+                    title = "Venues",
+                    icon = R.drawable.stadium,
+                    tab = HomeTabs.VENUES
+                ),
+                HomeTab(
+                    title = "News",
+                    icon = R.drawable.news,
+                    tab = HomeTabs.NEWS
+                ),
+                HomeTab(
+                    title = "Users management",
+                    icon = R.drawable.content_review,
+                    tab = HomeTabs.USERS
+                ),
+
+            )
+        }
+        UserRole.TEAM_ADMIN -> {
+
+            listOf(
+                HomeTab(
+                    title = "My Clubs",
+                    icon = R.drawable.football_club,
+                    tab = HomeTabs.CLUBS
+                ),
+                HomeTab(
+                    title = "Fixtures",
+                    icon = R.drawable.fixtures,
+                    tab = HomeTabs.FIXTURES
+                ),
+            )
+
+        }
+        UserRole.CONTENT_ADMIN -> {
+            listOf(
+                HomeTab(
+                    title = "Fixtures",
+                    icon = R.drawable.fixtures,
+                    tab = HomeTabs.FIXTURES
+                ),
+                HomeTab(
+                    title = "Venues",
+                    icon = R.drawable.stadium,
+                    tab = HomeTabs.VENUES
+                ),
+                HomeTab(
+                    title = "News",
+                    icon = R.drawable.news,
+                    tab = HomeTabs.NEWS
+                ),
+            )
+        }
+    }
 
     var selectedTab by rememberSaveable {
         mutableStateOf(HomeTabs.CLUBS)
@@ -134,6 +178,7 @@ fun HomeScreenComposable(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     drawerState: DrawerState?,
@@ -305,11 +350,17 @@ fun HomeScreen(
                     )
                 }
 
-                HomeTabs.CONTENT_REVIEW -> {
-                    ContentReviewDashboardScreenComposable(
+                HomeTabs.USERS -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
                         modifier = Modifier
+                            .fillMaxSize()
                             .weight(1f)
-                    )
+                    ) {
+                        Text(
+                            text = "Users management"
+                        )
+                    }
                 }
             }
         }

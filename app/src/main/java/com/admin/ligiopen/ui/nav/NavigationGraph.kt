@@ -31,6 +31,8 @@ import com.admin.ligiopen.ui.screens.news.newsManagement.NewsAdditionScreenCompo
 import com.admin.ligiopen.ui.screens.news.newsManagement.NewsAdditionScreenDestination
 import com.admin.ligiopen.ui.screens.news.newsManagement.NewsItemAdditionScreenComposable
 import com.admin.ligiopen.ui.screens.news.newsManagement.NewsItemAdditionScreenDestination
+import com.admin.ligiopen.ui.screens.player.PlayerDetailsScreenComposable
+import com.admin.ligiopen.ui.screens.player.PlayerDetailsScreenDestination
 import com.admin.ligiopen.ui.screens.start.SplashScreenComposable
 import com.admin.ligiopen.ui.screens.start.SplashScreenDestination
 
@@ -212,6 +214,24 @@ fun NavigationGraph(
                 },
                 navigateToClubUpdateScreen = {
                     navController.navigate("${ClubUpdateScreenDestination.route}/${it}")
+                },
+                navigateToPlayerDetailsScreen = {
+                    navController.navigate("${PlayerDetailsScreenDestination.route}/${it}")
+                }
+            )
+        }
+
+        composable(
+            PlayerDetailsScreenDestination.routeWithPlayerId,
+            arguments = listOf(
+                navArgument(PlayerDetailsScreenDestination.playerId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            PlayerDetailsScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
                 }
             )
         }

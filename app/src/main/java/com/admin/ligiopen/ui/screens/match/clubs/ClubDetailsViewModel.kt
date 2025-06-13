@@ -47,6 +47,22 @@ class ClubDetailsViewModel(
         }
     }
 
+    fun uploadClubPhoto(logo: Uri) {
+        _uiState.update {
+            it.copy(
+                newPhoto = logo
+            )
+        }
+    }
+
+    fun removeClubPhoto() {
+        _uiState.update {
+            it.copy(
+                newPhoto = null
+            )
+        }
+    }
+
     private fun getClub() {
         viewModelScope.launch {
             try {
@@ -85,6 +101,56 @@ class ClubDetailsViewModel(
                         token = uiState.value.userAccount.token,
                         clubId = clubId!!.toInt(),
                         clubLogo = logoPart
+                    )
+
+                    if(response.isSuccessful) {
+                        getClub()
+                        _uiState.update {
+                            it.copy(
+                                loadingStatus = LoadingStatus.SUCCESS
+                            )
+                        }
+                        Log.d("setClubLogo", "SUCCESS")
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                loadingStatus = LoadingStatus.FAIL
+                            )
+                        }
+
+                        Log.e("setClubLogo", "ResponseErr: $response")
+
+                    }
+
+                } catch (e: Exception) {
+
+                    _uiState.update {
+                        it.copy(
+                            loadingStatus = LoadingStatus.FAIL
+                        )
+                    }
+
+                    Log.e("setClubLogo", "Exception: $e")
+
+                }
+            }
+        }
+    }
+
+    fun setClubPhoto(context: Context) {
+        _uiState.update {
+            it.copy(
+                loadingStatus = LoadingStatus.LOADING
+            )
+        }
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    val photoPart = uriToMultipart(uiState.value.newPhoto!!, context)
+                    val response = apiRepository.changeClubPhoto(
+                        token = uiState.value.userAccount.token,
+                        clubId = clubId!!.toInt(),
+                        photo = photoPart
                     )
 
                     if(response.isSuccessful) {

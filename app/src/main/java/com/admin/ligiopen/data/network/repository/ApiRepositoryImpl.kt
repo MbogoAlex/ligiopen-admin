@@ -27,6 +27,7 @@ import com.admin.ligiopen.data.network.models.news.NewsStatusUpdateRequestBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
+import com.admin.ligiopen.data.network.models.player.PlayerUpdateRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
 
@@ -213,10 +214,30 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             clubLogo = clubLogo
         )
 
+    override suspend fun changeClubPhoto(
+        token: String,
+        clubId: Int,
+        photo: MultipartBody.Part
+    ): Response<ClubResponseBody> =
+        apiService.changeClubPhoto(
+            token = "Bearer $token",
+            clubId = clubId,
+            photo = photo
+        )
+
     override suspend fun getPlayer(token: String, playerId: Int): Response<PlayerResponseBody> =
         apiService.getPlayer(
             token = "Bearer $token",
             playerId = playerId
+        )
+
+    override suspend fun updatePlayerDetails(
+        token: String,
+        playerUpdateRequest: PlayerUpdateRequest
+    ): Response<PlayerResponseBody> =
+        apiService.updatePlayerDetails(
+            token = "Bearer $token",
+            playerUpdateRequest = playerUpdateRequest
         )
 
     override suspend fun getAllNews(
