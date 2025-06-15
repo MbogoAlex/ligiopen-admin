@@ -28,15 +28,10 @@ import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerUpdateRequest
+import com.admin.ligiopen.data.network.models.user.UserResponseBody
+import com.admin.ligiopen.data.network.models.user.UsersResponseBody
 import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.Header
-import retrofit2.http.Multipart
-import retrofit2.http.PUT
-import retrofit2.http.Part
-import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface ApiRepository {
 
@@ -227,5 +222,18 @@ interface ApiRepository {
         token: String,
         clubUpdateRequest: ClubUpdateRequest
     ): Response<ClubResponseBody>
+
+    //    Get user
+    suspend fun getUser(
+        token: String,
+        userId: Int
+    ): Response<UserResponseBody>
+
+    //    Get users
+    suspend fun getUsers(
+        token: String,
+        username: String?,
+        role: String?
+    ): Response<UsersResponseBody>
 
 }

@@ -28,6 +28,8 @@ import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerUpdateRequest
+import com.admin.ligiopen.data.network.models.user.UserResponseBody
+import com.admin.ligiopen.data.network.models.user.UsersResponseBody
 import okhttp3.MultipartBody
 import retrofit2.Response
 
@@ -305,5 +307,22 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.updateClubDetails(
             token = "Bearer $token",
             clubUpdateRequest = clubUpdateRequest
+        )
+
+    override suspend fun getUser(token: String, userId: Int): Response<UserResponseBody> =
+        apiService.getUser(
+            token = "Bearer $token",
+            userId = userId
+        )
+
+    override suspend fun getUsers(
+        token: String,
+        username: String?,
+        role: String?
+    ): Response<UsersResponseBody> =
+        apiService.getUsers(
+            token = "Bearer $token",
+            username = username,
+            role = role
         )
 }

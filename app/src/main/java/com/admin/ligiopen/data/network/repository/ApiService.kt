@@ -28,6 +28,8 @@ import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerUpdateRequest
+import com.admin.ligiopen.data.network.models.user.UserResponseBody
+import com.admin.ligiopen.data.network.models.user.UsersResponseBody
 import okhttp3.MultipartBody
 import okhttp3.Request
 import retrofit2.Response
@@ -270,5 +272,20 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body clubUpdateRequest: ClubUpdateRequest
     ): Response<ClubResponseBody>
+
+//    Get user
+    @GET("user/{userId}")
+    suspend fun getUser(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Int
+    ): Response<UserResponseBody>
+
+//    Get users
+    @GET("user")
+    suspend fun getUsers(
+        @Header("Authorization") token: String,
+        @Query("username") username: String?,
+        @Query("role") role: String?
+    ): Response<UsersResponseBody>
 
 }

@@ -49,7 +49,7 @@ import com.admin.ligiopen.ui.screens.match.clubs.ClubsScreenComposable
 import com.admin.ligiopen.ui.screens.match.fixtures.FixturesScreenComposable
 import com.admin.ligiopen.ui.screens.match.location.LocationsScreenComposable
 import com.admin.ligiopen.ui.screens.news.NewsScreenComposable
-import com.admin.ligiopen.ui.screens.review.ContentReviewDashboardScreenComposable
+import com.admin.ligiopen.ui.screens.users.UserRole
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
 import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenHeight
@@ -78,7 +78,7 @@ fun HomeScreenComposable(
 
     BackHandler(onBack = {(context as Activity).finish()})
 
-    val role = UserRole.TEAM_ADMIN
+    val role = UserRole.SUPER_ADMIN
 
     val tabs = when(role) {
         UserRole.SUPER_ADMIN -> {
