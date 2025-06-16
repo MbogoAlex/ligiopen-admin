@@ -19,7 +19,8 @@ val club = ClubData(
     archived = false,
     archivedAt = null,
     players = players,
-    clubStatus = "APPROVED"
+    clubStatus = "APPROVED",
+    admins = emptyList()
 )
 
 val emptyClub = ClubData(
@@ -37,7 +38,8 @@ val emptyClub = ClubData(
     archived = false,
     archivedAt = null,
     players = emptyList(),
-    clubStatus = ""
+    clubStatus = "",
+    admins = emptyList()
 )
 
 val clubs = List(10) {index ->
@@ -56,6 +58,7 @@ val clubs = List(10) {index ->
         archived = false,
         archivedAt = null,
         players = players,
-        clubStatus = "APPROVED"
+        clubStatus = "APPROVED",
+        admins = emptyList()
     )
 }

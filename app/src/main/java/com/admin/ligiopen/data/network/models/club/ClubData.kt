@@ -21,4 +21,5 @@ data class ClubData(
     val archivedAt: String?,
     val players: List<PlayerData>,
     val clubStatus: String,
+    val admins: List<Int>
 )
