@@ -28,6 +28,8 @@ import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerUpdateRequest
+import com.admin.ligiopen.data.network.models.user.AdminSetRequestBody
+import com.admin.ligiopen.data.network.models.user.ClubAdminSetRequestBody
 import com.admin.ligiopen.data.network.models.user.UserResponseBody
 import com.admin.ligiopen.data.network.models.user.UsersResponseBody
 import okhttp3.MultipartBody
@@ -324,5 +326,32 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             token = "Bearer $token",
             username = username,
             role = role
+        )
+
+    override suspend fun setSuperAdmin(
+        token: String,
+        adminSetRequestBody: AdminSetRequestBody
+    ): Response<UserResponseBody> =
+        apiService.setSuperAdmin(
+            token = "Bearer $token",
+            adminSetRequestBody = adminSetRequestBody
+        )
+
+    override suspend fun setTeamAdmin(
+        token: String,
+        clubAdminSetRequestBody: ClubAdminSetRequestBody
+    ): Response<UserResponseBody> =
+        apiService.setTeamAdmin(
+            token = "Bearer $token",
+            clubAdminSetRequestBody = clubAdminSetRequestBody
+        )
+
+    override suspend fun setContentAdmin(
+        token: String,
+        adminSetRequestBody: AdminSetRequestBody
+    ): Response<UserResponseBody> =
+        apiService.setContentAdmin(
+            token = "Bearer $token",
+            adminSetRequestBody = adminSetRequestBody
         )
 }

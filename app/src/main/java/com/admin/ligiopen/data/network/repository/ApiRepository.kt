@@ -28,6 +28,8 @@ import com.admin.ligiopen.data.network.models.news.SingleNewsItemResponseBody
 import com.admin.ligiopen.data.network.models.news.SingleNewsResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerResponseBody
 import com.admin.ligiopen.data.network.models.player.PlayerUpdateRequest
+import com.admin.ligiopen.data.network.models.user.AdminSetRequestBody
+import com.admin.ligiopen.data.network.models.user.ClubAdminSetRequestBody
 import com.admin.ligiopen.data.network.models.user.UserResponseBody
 import com.admin.ligiopen.data.network.models.user.UsersResponseBody
 import okhttp3.MultipartBody
@@ -235,5 +237,23 @@ interface ApiRepository {
         username: String?,
         role: String?
     ): Response<UsersResponseBody>
+
+    //    Set super admin
+    suspend fun setSuperAdmin(
+        token: String,
+        adminSetRequestBody: AdminSetRequestBody
+    ): Response<UserResponseBody>
+
+    //    Set club admin
+    suspend fun setTeamAdmin(
+        token: String,
+        clubAdminSetRequestBody: ClubAdminSetRequestBody
+    ): Response<UserResponseBody>
+
+    //    Set club admin
+    suspend fun setContentAdmin(
+        token: String,
+        adminSetRequestBody: AdminSetRequestBody
+    ): Response<UserResponseBody>
 
 }
