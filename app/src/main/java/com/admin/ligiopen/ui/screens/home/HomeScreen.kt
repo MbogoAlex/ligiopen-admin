@@ -50,6 +50,7 @@ import com.admin.ligiopen.ui.screens.match.fixtures.FixturesScreenComposable
 import com.admin.ligiopen.ui.screens.match.location.LocationsScreenComposable
 import com.admin.ligiopen.ui.screens.news.NewsScreenComposable
 import com.admin.ligiopen.ui.screens.users.UserRole
+import com.admin.ligiopen.ui.screens.users.UsersManagementScreenComposable
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
 import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenHeight
@@ -351,16 +352,7 @@ fun HomeScreen(
                 }
 
                 HomeTabs.USERS -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f)
-                    ) {
-                        Text(
-                            text = "Users management"
-                        )
-                    }
+                    UsersManagementScreenComposable()
                 }
             }
         }

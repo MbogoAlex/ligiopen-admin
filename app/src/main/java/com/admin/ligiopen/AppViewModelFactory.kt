@@ -21,6 +21,7 @@ import com.admin.ligiopen.ui.screens.news.newsManagement.NewsAdditionViewModel
 import com.admin.ligiopen.ui.screens.news.newsManagement.NewsItemAdditionViewModel
 import com.admin.ligiopen.ui.screens.player.PlayerDetailsViewModel
 import com.admin.ligiopen.ui.screens.start.SplashViewModel
+import com.admin.ligiopen.ui.screens.users.UsersManagementViewModel
 
 object AppViewModelFactory {
     val Factory = viewModelFactory {
@@ -141,6 +142,13 @@ object AppViewModelFactory {
                 apiRepository = ligiopenApplication().container.apiRepository,
                 dbRepository = ligiopenApplication().container.dbRepository,
                 savedStateHandle = this.createSavedStateHandle()
+            )
+        }
+
+        initializer {
+            UsersManagementViewModel(
+                apiRepository = ligiopenApplication().container.apiRepository,
+                dbRepository = ligiopenApplication().container.dbRepository,
             )
         }
 
