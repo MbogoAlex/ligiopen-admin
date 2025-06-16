@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,12 +39,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.admin.ligiopen.AppViewModelFactory
 import com.admin.ligiopen.data.network.enums.LoadingStatus
 import com.admin.ligiopen.data.network.models.user.UserDto
 import com.admin.ligiopen.data.network.models.user.users
 import com.admin.ligiopen.ui.theme.LigiopenadminTheme
+import com.admin.ligiopen.utils.screenFontSize
 import com.admin.ligiopen.utils.screenHeight
 import com.admin.ligiopen.utils.screenWidth
 import kotlinx.coroutines.launch
@@ -62,6 +65,7 @@ fun UsersManagementScreenComposable(
     ) {
         UsersManagementScreen(
             users = uiState.users,
+            currentTab = uiState.currentTab,
             onChangeTab = viewModel::switchTab,
             loadingStatus = uiState.loadingStatus
         )
@@ -72,6 +76,7 @@ fun UsersManagementScreenComposable(
 @Composable
 fun UsersManagementScreen(
     users: List<UserDto>,
+    currentTab: UserRole,
     onChangeTab: (tab: UserRole) -> Unit,
     loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
@@ -181,6 +186,17 @@ fun UsersManagementScreen(
                 }
             }
 
+        }
+
+        Button(
+            onClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = "Add ${currentTab.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() }}",
+                fontSize = screenFontSize(14.0).sp
+            )
         }
 
     }
@@ -362,6 +378,7 @@ fun UsersManagementScreenPreview() {
     LigiopenadminTheme {
         UsersManagementScreen(
             users = users,
+            currentTab = UserRole.SUPER_ADMIN,
             onChangeTab = {},
             loadingStatus = LoadingStatus.INITIAL
         )
